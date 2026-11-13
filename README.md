@@ -14,6 +14,7 @@ Capim Dourado Shopping — Atendimento e Experiência de Serviços
 Entrega de Planejamento Técnico Prazo: sexta-feira, 13/11, até 12h Foco: planejamento e definição técnica inicial (não é o MVP final)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 Proposta e estrutura inicial das telas
 
 Auri, a assistente do Capim Dourado Shopping · Web app mobile-first
@@ -48,8 +49,7 @@ Quando a pessoa aponta a câmera para o QR Code da Entrada Principal, o navegado
 conversa já começa com a primeira mensagem da pessoa enviada automaticamente: “Oi Auri! Tô aqui na Entrada Principal.”
 Em seguida aparece uma figurinha da Auri, com cara de inteligente, e a mensagem: “Oie! ✨ Que bom te ver! Como você me chamou pelo QR 
 Code da Entrada, eu já sei exataaaamente onde você está no mapa. O que você quer fazer agora?”
-Logo embaixo aparecem as opções rápidas, em botões grandes: [Banheiros e Fraldário], [Praça de Alimentação], [Lojas e Cinema] e 
-[Resolver um B.O. / Serviços]. No rodapé fixo ficam o campo “Escreva sua dúvida” e o botão de microfone.
+Logo embaixo aparecem as opções rápidas, em botões grandes: [Banheiros e Fraldário], [Praça de Alimentação], [Lojas e Cinema] e [Resolver um B.O. / Serviços]. No rodapé fixo ficam o campo “Escreva sua dúvida” e o botão de microfone.
 
 Tela 2: a Rota Dourada (quando ela aperta “Banheiros e Fraldário”)
 Suponha que bateu o desespero e a pessoa apertou o botão do banheiro. A resposta aparece na hora, como um balão da Auri: “Sua bexiga 
@@ -85,44 +85,42 @@ Acessibilidade em todas as telas
 • Funciona com leitor de tela (TalkBack e VoiceOver), com navegação por teclado e com zoom de até 200%.
 • Botões de no mínimo 48×48 px e uma faixa fixa “Falar com uma pessoa” em qualquer tela.
 • Os emojis são decorativos e têm rótulo em texto, para não atrapalhar quem usa leitor de tela.
+
 Linguagem de programação escolhida
-TypeScript em todo o projeto, com Next.js (React) no front-end e no servidor. Uma só linguagem para a equipe inteira reduz o tempo de 
-aprendizado e permite compartilhar código entre o app, o painel da equipe e a API. O esqueleto:
-• Interface (front-end): Next.js com React e Tailwind CSS, mobile-first e instalável como PWA ("adicionar à tela inicial"), sem 
-passar por loja. Componentes acessíveis prontos (shadcn/ui, baseado em Radix) para botões, diálogos e foco por teclado.
-• Servidor (back-end): rotas de API do próprio Next.js, em TypeScript e validadas com Zod, sem um servidor separado para manter.
-• Banco, arquivos e tempo real: Supabase (PostgreSQL, Storage e Realtime). Guarda as sessões, o ponto de origem de cada pessoa e os 
-chamados de B.O.; guarda as fotos e os áudios; e entrega cada chamado ao painel da equipe na hora, sem programar WebSocket.
-• Inteligência: API do Gemini, com as instruções fixas da Auri e a base do shopping (base-shopping.json: lojas, horários, serviços, 
-eventos e pontos do mapa) enviada como contexto. Como a base é pequena, não precisa de banco vetorial. As respostas saem em JSON 
-estruturado, para o app saber se deve mostrar botões, um mapa ou abrir um chamado.
-• Áudio e voz: gravação com a API MediaRecorder do navegador. O áudio é enviado ao próprio Gemini, que o entende e transcreve, sem 
-serviço extra. A resposta em voz usa a Web Speech API do navegador.
-• Mapas e rotas: a planta é um SVG. Os pontos (QR Codes, lojas, banheiros, elevadores) formam um grafo, e o caminho é calculado com o 
-algoritmo de Dijkstra, em TypeScript, e desenhado como a linha dourada tracejada. Tudo roda no navegador, sem serviço de mapas pago.
-• Qualidade e acessibilidade: Playwright para testes de ponta a ponta em celular simulado e axe-core para checar a acessibilidade 
-automaticamente.
+
+Python no servidor e HTML, CSS e JavaScript na tela
+
+• Interface (front-end): HTML para a estrutura da tela, CSS para as cores, os botões grandes e o layout mobile-first, e JavaScript básico só para mostrar as mensagens na conversa. A foto vem de um campo <input type="file" accept="image/*" capture>, que já abre a câmera do celular sem código extra.
+• Servidor (back-end): Python com Flask, um framework pequeno em que cada tela é uma função. Ele recebe as mensagens, decide a resposta e salva os chamados.
+• Banco de dados: SQLite, que já vem com o Python e é um único arquivo. Guarda as sessões, o ponto de origem de cada pessoa e os chamados de B.O. As fotos ficam numa pasta uploads/.
+• Inteligência: os 4 botões respondem com regras simples em Python (if/else), sem IA, o que garante respostas certas e rápidas. As perguntas livres vão para a API do Gemini, junto com a base do shopping (base-shopping.json: lojas, horários, serviços, eventos e pontos do mapa), que o Python lê e envia como contexto.
+• Voz: o microfone usa o reconhecimento de voz do próprio navegador (Web Speech API), que transforma a fala em texto, e o botão Ouvir usa a síntese de voz do navegador. Não tem custo nem instalação. Funciona melhor no Chrome, por isso o campo de texto sempre existe como alternativa.
+• Mapas e rotas: a planta é um arquivo SVG (imagem vetorial). Na primeira versão, a rota dourada de cada par "origem → destino" é desenhada à mão e guardada em um arquivo JSON. Como evolução, o Python calcula o caminho com o algoritmo de Dijkstra.
+• Painel da equipe: uma página HTML protegida por senha, que consulta o servidor a cada poucos segundos e mostra os chamados novos, com local, foto, texto e horário.
+• Testes: testes manuais no celular e no modo celular do navegador, checagem de acessibilidade com o Lighthouse do Chrome e teste com leitor de tela (TalkBack no Android).
+
 Arquitetura proposta
 
 Fluxo de ponta a ponta:
 1.  Totem com QR Code → endereço do web app com o ponto de origem (?p=entrada-principal).
-2.  Web app (celular da pessoa): PWA em Next.js com conversa, microfone, câmera e mapas, conectado por HTTPS.
-3.  API da Auri (rotas do Next.js, em TypeScript), com estes módulos:
+2.  Web app (celular da pessoa): páginas em HTML, CSS e JavaScript abertas no navegador, com conversa, microfone, câmera e mapas.
+3.  Servidor da Auri (Python + Flask), com estes módulos:
     ◦ Sessões: guarda de qual QR a pessoa veio.
-    ◦ Orquestrador: máquina de estados das 4 telas.
-    ◦ IA: Gemini + base do shopping.
-    ◦ Mídia: áudio entendido pelo Gemini; foto anexada ao chamado.
-    ◦ Chamados de B.O.: cria o chamado e avisa a equipe.
-    ◦ Rotas: Dijkstra sobre o grafo da planta e desenho do SVG com a rota dourada.
-4.  Supabase (PostgreSQL + Storage + Realtime): sessões, chamados, fotos e áudios.
-5.  Painel da equipe (rota protegida por login, no mesmo projeto): recebe os chamados em tempo real, com local, foto e áudio, e
-6.  permite assumir e concluir o atendimento.
-7.  FAQ web acessível: versão em página simples das perguntas frequentes, para quem não quiser conversar.
-8.  Hospedagem: Vercel para o app e Supabase para os dados.
+    ◦ Orquestrador: controla em qual das 4 telas a pessoa está e qual resposta dar.
+    ◦ IA: Gemini + base do shopping, para perguntas livres.
+    ◦ Chamados de B.O.: cria o chamado, guarda a foto e avisa a equipe.
+    ◦ Rotas: escolhe o SVG com a rota dourada para o par origem e destino.
+4.  SQLite + pasta uploads/: sessões, chamados e fotos.
+5.  Painel da equipe (página HTML com senha): atualiza sozinha a cada poucos segundos, com os chamados novos, e permite marcar como "assumido" ou "concluído".
+6.  FAQ web acessível: versão em página simples das perguntas frequentes, para quem não quiser conversar.
+7.  Hospedagem: Render (plano gratuito) ou o notebook da equipe durante a apresentação.
+
 Plataformas e tecnologias adotadas
+
 • GitHub
 • VSCode
 • Fedora
 • Gemini
 • Claude
-• Node.js (versão LTS), Next.js, Supabase e Vercel
+• Python 3, Flask e SQLite
+• Lighthouse (Chrome)
