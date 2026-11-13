@@ -1,0 +1,16 @@
+{
+  "stores": [],
+  "services": [
+    {
+      "name": "Atendimento inclusivo",
+      "answer": "O shopping oferece empréstimo de cadeiras de rodas e cordões de girassol no SAC. Confirme a disponibilidade com a equipe."
+    }
+  ],
+  "events": [],
+  "map_points": [
+    {
+      "name": "Elevador panorâmico",
+      "location": "Praça de Alimentação, Ala Sul"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#78532B">
+    <title>CapiBot - Assistente Virtual | Capim Dourado Shopping</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon" aria-hidden="true">CD</div>
+            <div>
+                <strong>Capim Dourado</strong>
+                <div class="shopping-location">Shopping - Palmas / TO</div>
+            </div>
+        </div>
+        <div class="accessibility-bar">
+            <button class="acc-btn" id="contrastBtn" type="button" aria-pressed="false">Alto Contraste</button>
+            <button class="acc-btn" id="speakBtn" type="button">Ouvir</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section" aria-labelledby="welcomeTitle">
+            <div class="capibot-avatar-container" aria-hidden="true">
+                <div class="capibot-avatar">🤖🌿</div>
+            </div>
+            <div class="speech-bubble" id="welcomeTitle">
+                Olá! Eu sou o <strong>CapiBot</strong>. Como posso ajudar na sua experiência hoje?
+            </div>
+        </section>
+
+        <section class="chat-section" aria-label="Conversa com CapiBot">
+            <div class="voice-container">
+                <button class="mic-btn" id="micBtn" type="button" title="Falar com CapiBot" aria-label="Iniciar reconhecimento de voz">
+                    🎙️
+                </button>
+            </div>
+            <p class="voice-label">Fale com CapiBot ou digite sua pergunta</p>
+
+            <label class="field-label" for="originInput">Seu local de origem (opcional)</label>
+            <input id="originInput" class="text-input" maxlength="120" placeholder="Informe onde você está no shopping">
+
+            <div class="chat-box" id="chatBox" role="log" aria-live="polite" aria-relevant="additions">
+                <div class="message bot">
+                    🤖 Olá! Toque no microfone ou escolha uma opção para começarmos:
+                </div>
+            </div>
+
+            <form id="chatForm" class="chat-form">
+                <label class="sr-only" for="messageInput">Digite sua pergunta</label>
+                <input id="messageInput" class="text-input" maxlength="2000" autocomplete="off" placeholder="Digite sua pergunta..." required>
+                <button class="primary-btn" type="submit">Enviar</button>
+            </form>
+
+            <div class="quick-chips" aria-label="Perguntas rápidas">
+                <button class="chip" type="button" data-prompt="Onde fica o elevador?">🛗 Onde fica o elevador?</button>
+                <button class="chip" type="button" data-prompt="Quero registrar uma reclamação">📝 Registrar reclamação</button>
+                <button class="chip" type="button" data-prompt="Quais são as lojas abertas?">🛍️ Lojas abertas</button>
+                <button class="chip" type="button" data-prompt="Preciso de atendimento inclusivo">♿ Atendimento inclusivo</button>
+            </div>
+        </section>
+
+        <section class="ticket-section" aria-labelledby="ticketTitle">
+            <h2 id="ticketTitle">Registrar um chamado</h2>
+            <p>Descreva o que aconteceu. Se quiser, anexe uma foto.</p>
+            <form id="ticketForm" class="ticket-form">
+                <label class="field-label" for="ticketMessage">Descrição</label>
+                <textarea id="ticketMessage" name="message" maxlength="2000" required></textarea>
+                <label class="field-label" for="ticketPhoto">Foto (opcional)</label>
+                <input id="ticketPhoto" name="photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment">
+                <button class="primary-btn" type="submit">Enviar chamado</button>
+            </form>
+        </section>
+
+        <section class="map-section" aria-labelledby="mapTitle">
+            <h2 id="mapTitle">Mapa e rotas</h2>
+            <p>A planta e as rotas serão configuradas com os pontos confirmados do shopping.</p>
+            <img class="shopping-map" src="{{ url_for('static', filename='mapa-shopping.svg') }}" alt="Espaço reservado para a planta do shopping">
+        </section>
+    </main>
+
+    <footer>
+        Capim Dourado Shopping &copy; 2026 — Atendimento e Experiência de Serviços Inclusivos
+    </footer>
+</body>
+</html>
