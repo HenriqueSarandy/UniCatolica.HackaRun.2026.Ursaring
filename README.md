@@ -28,6 +28,7 @@ shopping (lojas, horários, serviços, eventos e mapa), a Auri responde sobre o 
 ajuda no funcionamento dinâmico do shopping, avisando a equipe quando alguém precisa de ajuda.
 
 Visual
+
 • Cores: fundo creme claro (#FFF8E1), texto marrom-escuro quase preto (#2B1D00) e botões dourados (#F2B705) com texto preto. É uma 
 referência ao capim dourado, e o contraste passa de 10:1. Há um botão para alto contraste (preto e amarelo) e outro para modo escuro.
 • Letra: Atkinson Hyperlegible, uma fonte criada para pessoas com baixa visão. Tamanho base de 20 px, com botão “A+” visível.
