@@ -57,3 +57,10 @@ export async function getTicket(id: string, sessionId: string): Promise<TicketPu
   if (USE_MOCKS) return { id, status: "novo", updatedAt: new Date().toISOString() };
   return request(`/api/tickets/${encodeURIComponent(id)}?sessionId=${encodeURIComponent(sessionId)}`);
 }
+
+export async function sendFeedback(
+  id: string, sessionId: string, body: { resolved: boolean; rating?: number; text?: string },
+): Promise<TicketPublic> {
+  if (USE_MOCKS) return { id, status: body.resolved ? "concluido" : "novo", updatedAt: new Date().toISOString() };
+  return request(`/api/tickets/${encodeURIComponent(id)}/feedback`, json({ sessionId, ...body }));
+}

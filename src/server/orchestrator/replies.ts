@@ -4,10 +4,9 @@ export const MAIN_QUICK_REPLIES: QuickReply[] = [
   { id: "banheiros", label: "Banheiros e Fraldário" },
   { id: "alimentacao", label: "Praça de Alimentação" },
   { id: "lojas", label: "Lojas e Cinema" },
-  { id: "servicos", label: "Resolver um B.O. / Serviços" },
+  { id: "servicos", label: "Serviços e ajuda" },
 ];
 
-export const TALK_TO_PERSON: QuickReply = { id: "servicos", label: "Falar com uma pessoa" };
 
 export const R = {
   greeting: (point: string) =>
@@ -20,17 +19,15 @@ export const R = {
     `Bateu a fome? 🍔 O lugar mais pertinho para comer é a ${nome}.`,
   steps: (steps: string[]) =>
     `É só seguir essa linha dourada! ${steps.slice(0, 4).join(". ")}.`,
-  semRotaAmenity: "Achei o lugar, mas ainda não tenho o caminho desenhado. Quer falar com uma pessoa?",
+  semRotaAmenity: "Achei o lugar, mas ainda não tenho o caminho desenhado. Ele fica perto do SAC, no piso 1.",
   lojasPrompt: "Opa, bora gastar! 🛍️ Digita o nome da loja que você procura (ou escolhe na lista).",
-  servicosPrompt:
-    "Deu ruim? Pode falar comigo! Me conta o que aconteceu (perdi algo, preciso de ajuda com o carro, cadeira de rodas…) que eu chamo a equipe de segurança.",
   lojaAchei: (floor: number) =>
     `Achei! Fica no piso ${floor}. Segue esse mapinha com a rota dourada aqui embaixo!`,
   lojaSemRota: (floor: number, landmark: string | null) =>
     `Achei a loja, mas ainda não tenho o caminho desenhado. Fica no piso ${floor}${landmark ? `, ${landmark}` : ""}.`,
   lojaQual: "Qual dessas?",
   lojaNaoAchei: "Não achei essa loja. Tenta outro nome?",
-  naoSei: "Não tenho certeza. Quer falar com uma pessoa?",
+  naoSei: "Não tenho certeza. Escolha uma das opções abaixo ou reformule a pergunta.",
 };
 
 export function bot(partial: Omit<BotMessage, "id" | "role">): BotMessage {

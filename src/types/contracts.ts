@@ -23,6 +23,7 @@ export interface BotMessage {
   quickReplies?: QuickReply[];
   map?: MapPayload;
   suggestInput?: "loja" | "bo";
+  ticketId?: string;                     // chamado criado nesta resposta (o chat passa a acompanhá-lo)
 }
 
 export interface SessionResponse { sessionId: string; point: { id: PointId; name: string }; }
@@ -38,6 +39,12 @@ export interface ChatResponse { messages: BotMessage[]; }
 export interface StoreSummary { id: string; name: string; floor: number; category: string; }
 
 export type TicketStatus = "novo" | "assumido" | "concluido";
-export type TicketCategory = "carro" | "objeto_perdido" | "cadeira_de_rodas" | "banheiro" | "falar_com_pessoa" | "outro";
+export type TicketCategory = "carro" | "objeto_perdido" | "cadeira_de_rodas" | "banheiro" | "falar_com_pessoa" | "reclamacao" | "outro";
+export type TicketKind = "ajuda" | "reclamacao" | "sugestao";
+export type TicketTeam = "seguranca" | "sac" | "manutencao" | "limpeza";
+export type ResolutionCode = "resolvido" | "encaminhado" | "nao_localizado" | "improcedente";
 export interface TicketCreated { ticketId: string; status: TicketStatus; etaMinutes: number; }
-export interface TicketPublic { id: string; status: TicketStatus; assignedTo?: string; updatedAt: string; }
+export interface TicketPublic {
+  id: string; status: TicketStatus; assignedTo?: string; updatedAt: string;
+  kind?: TicketKind; resolutionNote?: string; resolutionCode?: ResolutionCode; rating?: number; canReopen?: boolean;
+}

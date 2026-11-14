@@ -4,7 +4,7 @@ import { sanitizeAi } from "@/server/ai/sanitize";
 import { recentMessages } from "@/server/db/sessions";
 import { getPointName, loadKnowledgeBase } from "@/server/maps/service";
 import { normalize } from "../intent";
-import { bot, MAIN_QUICK_REPLIES, R, stripEmoji, TALK_TO_PERSON } from "../replies";
+import { bot, MAIN_QUICK_REPLIES, R, stripEmoji } from "../replies";
 import type { Ctx, HandlerResult } from "../states";
 
 const KEYWORDS: [RegExp, string][] = [
@@ -41,7 +41,24 @@ export async function freeText(ctx: Ctx, text: string): Promise<HandlerResult> {
   answer ??= localFallback(text) ?? undefined;
 
   if (answer) {
-    return { state: "livre", messages: [bot({ text: answer, speakText: stripEmoji(answer), quickReplies: [TALK_TO_PERSON] })] };
+    return {
+      state: "livre",
+      messages: [bot({
+        text: answer, speakText: stripEmoji(answer),
+        quickReplies: [{ id: "ajudou", label: "Ajudou" }, { id: "nao-ajudou", label: "Não ajudou" }],
+      })],
+    };
   }
-  return { state: "livre", messages: [bot({ text: R.naoSei, quickReplies: MAIN_QUICK_REPLIES })] };
+  // 2ª falha seguida: para de insistir e abre o chamado para um humano.
+  if (ctx.session.state === "livre_sem_resposta") {
+    const text = "Ainda não consegui te ajudar com isso. Quer registrar uma reclamação para a equipe do shopping?";
+    return {
+      state: "livre",
+      messages: [bot({
+        text, speakText: text, sticker: "seguranca",
+        quickReplies: [{ id: "rec:servicos", label: "Fazer uma reclamação" }, ...MAIN_QUICK_REPLIES.slice(0, 3)],
+      })],
+    };
+  }
+  return { state: "livre_sem_resposta", messages: [bot({ text: R.naoSei, quickReplies: MAIN_QUICK_REPLIES })] };
 }

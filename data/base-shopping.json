@@ -96,5 +96,13 @@
     { "pergunta": "Tem carregador de celular disponível?", "resposta": "Sim, há pontos de recarga na Praça de Alimentação." },
     { "pergunta": "Posso usar cadeira de rodas emprestada?", "resposta": "Sim, peça no SAC com um documento. É gratuito." },
     { "pergunta": "Aceita vale-alimentação na praça?", "resposta": "A maioria das lojas da praça aceita. Confirme direto no balcão." }
+  ],
+  "orientacoes": [
+    { "id": "carro", "titulo": "Não achei meu carro", "texto": "Calma, vamos achar! Veja os passos:", "passos": ["Confira em qual entrada você estacionou: Norte ou Sul.", "Procure a placa do setor e o número da vaga nas colunas.", "Se não achar, vá ao SAC: a segurança localiza o carro pela câmera."], "destino": "sac", "chamado": true },
+    { "id": "objeto_perdido", "titulo": "Perdi um objeto", "texto": "Vamos tentar recuperar. O que fazer:", "passos": ["Lembre o último lugar onde você estava.", "No SAC ficam os achados e perdidos.", "Se não estiver lá, descreva o objeto e mande uma foto: a equipe procura."], "destino": "sac", "chamado": true },
+    { "id": "cadeira_de_rodas", "titulo": "Preciso de cadeira de rodas", "texto": "Sem problema. A cadeira é gratuita:", "passos": ["Fique onde está: a equipe leva até você.", "Se preferir ir até lá, peça no SAC com um documento."], "destino": "sac", "chamado": true },
+    { "id": "banheiro", "titulo": "Problema no banheiro", "texto": "Obrigado por avisar! A limpeza resolve rápido:", "passos": ["Diga qual banheiro e o problema (sem papel, sujo, quebrado).", "Uma foto ajuda a equipe a chegar preparada."], "chamado": true },
+    { "id": "emergencia", "titulo": "Emergência", "texto": "Mantenha a calma. Em risco de vida, ligue 192 (SAMU) ou 193 (bombeiros).", "passos": ["Não mova a pessoa se ela estiver caída ou passando mal.", "Chamar a segurança agora: abra o chamado abaixo, ele vai com prioridade máxima."], "destino": "sac", "chamado": true, "urgente": true },
+    { "id": "reclamacao", "titulo": "Fazer uma reclamação", "texto": "Quero ouvir você. No chat, escolha Serviços e ajuda e depois Fazer uma reclamação. Você recebe um protocolo e acompanha a resposta.", "passos": [], "chamado": false }
   ]
 }

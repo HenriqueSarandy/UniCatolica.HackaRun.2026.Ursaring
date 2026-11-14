@@ -28,6 +28,10 @@ export const KnowledgeBaseSchema = z.object({
   lojas: z.array(Loja),
   eventos: z.array(z.object({ nome: z.string(), quando: z.string(), onde: z.string() })),
   faq: z.array(z.object({ pergunta: z.string(), resposta: z.string() })),
+  orientacoes: z.array(z.object({
+    id: z.string(), titulo: z.string(), texto: z.string(), passos: z.array(z.string()),
+    destino: z.string().optional(), chamado: z.boolean(), urgente: z.boolean().optional(),
+  })).default([]),
 });
 export const GrafoSchema = z.object({
   nos: z.array(z.object({ id: z.string(), piso: z.number().int(), x: z.number(), y: z.number() })),
@@ -192,4 +196,9 @@ export function nearestAmenity(fromPointId: string, tipo: AmenityTipo): { id: st
     if (!best || d < best.d) best = { id: c.id, name: c.nome, d };
   }
   return best && { id: best.id, name: best.name };
+}
+
+// ---------- orientações (TechSpec 05, Fase B) ----------
+export function getGuidance(id: string) {
+  return load().kb.orientacoes.find((o) => o.id === id) ?? null;
 }

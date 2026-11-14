@@ -14,3 +14,9 @@ for (const r of rows) {
   clear.run(r.id);
 }
 console.log(`✓ ${rows.length} foto(s) removida(s)`);
+
+// LGPD: também apaga o contato de retorno de chamados concluídos há > 24 h.
+const contacts = db
+  .prepare("UPDATE tickets SET contact = NULL WHERE status='concluido' AND contact IS NOT NULL AND closed_at < ?")
+  .run(cutoff);
+console.log(`✓ ${contacts.changes} contato(s) removido(s)`);

@@ -1,5 +1,5 @@
 import { getRoute, nearestAmenity } from "@/server/maps/service";
-import { bot, R, stripEmoji, TALK_TO_PERSON } from "../replies";
+import { bot, MAIN_QUICK_REPLIES, R, stripEmoji } from "../replies";
 import type { Ctx, HandlerResult } from "../states";
 
 export function amenityFlow(
@@ -12,7 +12,7 @@ export function amenityFlow(
   if (!a || !map) {
     return {
       state: "livre",
-      messages: [bot({ text: R.semRotaAmenity, quickReplies: [TALK_TO_PERSON] })],
+      messages: [bot({ text: R.semRotaAmenity, quickReplies: MAIN_QUICK_REPLIES })],
     };
   }
   const text = intro(a.name);

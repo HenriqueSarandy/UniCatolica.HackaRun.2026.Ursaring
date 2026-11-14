@@ -1,5 +1,13 @@
 # TechSpec 01 — Front-end do Chat (Dev 1)
 
+> **Status (pós-implementação).** O texto abaixo é o planejamento original. O que vale hoje está na [TechSpec 05](05-ciclo-atendimento.md). Divergências principais:
+> - Não existem `StoreAutocomplete`, `TicketStatusBanner`, `ListenButton`, `TalkToPersonBar` nem `voice.ts` como componentes próprios; o acompanhamento do chamado é o hook `useTicketWatch` (`src/lib/client`) e as mensagens vêm de `ticketMessages.ts`.
+> - **Removidos do chat:** a faixa fixa "Falar com uma pessoa" (4.6), o link "Reclamações e serviços" e o `IncidentPanel` (4.5). A reclamação agora é conversacional: tópico → "localização ou reclamação" → nome → texto (seção 2 da 05).
+> - O `IncidentPanel` continua existindo, mas só é usado na página `/atendimento` (`AtendimentoScreen`).
+> - Mensagens do bot podem trazer `ticketId`; o chat passa a acompanhar esse chamado (aceito, recusado, concluído, "Deu certo?", nota 1–5).
+> - O mock (`mock.ts`) não cobre o fluxo novo; use `NEXT_PUBLIC_USE_MOCKS=false`.
+
+
 **Objetivo:** entregar o web app mobile-first do CapiBot: a conversa, os botões rápidos, voz (entrada e saída), o fluxo de B.O. (texto, foto, áudio) e toda a acessibilidade descrita no README.
 
 **Contratos:** ver [README.md](README.md) (`contracts.ts`, endpoints). Este dev **consome** `/api/session`, `/api/chat`, `/api/stores`, `/api/tickets`, `/api/tickets/:id` e o componente `<MapView/>` do Dev 3.
@@ -16,7 +24,7 @@ Dentro:
 - Fluxo de B.O. (Tela 3): áudio→texto, foto, texto, confirmação e atualização de status.
 - Faixa fixa "Falar com uma pessoa".
 
-Fora: lógica de resposta (Dev 2), desenho do mapa (Dev 3), painel e FAQ (Dev 4).
+Fora: lógica de resposta (Dev 2), desenho do mapa (Dev 3), painel e FAQ (Dev 4)
 
 ## 2. Estrutura de arquivos
 

@@ -1,5 +1,7 @@
 # TechSpec 03 — Mapas, Rotas e Base de Conhecimento (Dev 3)
 
+> **Status (pós-implementação).** Além do descrito abaixo, `data/base-shopping.json` ganhou a seção `orientacoes` (carro, objeto perdido, cadeira de rodas, banheiro, emergência, reclamação), hoje usada só pelo `/faq` ("O que fazer se…"); `getRoute(origem, "sac")` alimenta a localização de "Serviços e ajuda". Não há seção de avisos. Fluxo completo: [05](05-ciclo-atendimento.md).
+
 **Objetivo:** entregar a base de dados do shopping (`base-shopping.json`), a planta em SVG, as rotas douradas "origem → destino", a busca de lojas e o componente visual `<MapView/>` acessível.
 
 **Contratos:** ver [README.md](README.md). Este dev **expõe** `GET /api/stores`, `GET /api/route`, o módulo `src/server/maps/service.ts` e o componente `src/components/map/MapView.tsx`. É **consumido** pelos Devs 1 e 2.

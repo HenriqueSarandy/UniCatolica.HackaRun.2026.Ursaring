@@ -122,16 +122,27 @@ Plataformas e tecnologias adotadas
 • SQLite
 
 
-## Backend (Dev 2) — como rodar
+## Como rodar e como funciona (estado atual)
+
+Detalhes completos em [docs/techspecs/05-ciclo-atendimento.md](docs/techspecs/05-ciclo-atendimento.md). As TechSpecs 01–04 são o planejamento original.
 
 ```bash
 npm install
-cp .env.example .env.local   # preencha GEMINI_API_KEY (opcional: sem chave usa fallback local)
+cp .env.example .env.local   # GEMINI_API_KEY é opcional (sem chave usa o fallback local)
 npm run dev                  # http://localhost:3000
 npm test                     # Vitest
-npm run smoke                # smoke test via PowerShell (servidor rodando)
+npm run validate:base        # valida base, plantas e rotas
+npm run seed:demo            # chamados fictícios para os indicadores ("-- --clear" remove)
+npm run https:proxy          # https://localhost:3443 → :3000 (microfone/câmera no celular)
+npm run purge:uploads        # LGPD: apaga fotos e contatos de chamados concluídos há > 24 h
+npm run smoke                # smoke via PowerShell (servidor rodando)
 ```
 
-- Banco: `data/capibot.sqlite` (criado e migrado automaticamente; migrações em `src/server/db/migrations`).
-- `src/server/maps/service.ts` é um **stub** do Dev 3 — será substituído mantendo as assinaturas.
-- Deploy: Render (Web Service Node) com disco persistente em `/data` e `/uploads`; env `GEMINI_API_KEY`, `PANEL_PASSWORD`, `SESSION_SECRET`; build `npm run build`, start `npm start`. O plano gratuito dorme — acorde 5 min antes da demo. Não usar Vercel (SQLite em disco).
+**Telas:** `/?p=<ponto>` (chat), `/atendimento` (formulário de reclamações e serviços, fora do chat), `/painel` (equipe, **sem senha**) e `/faq`.
+
+**Fluxo do chat:** o visitante escolhe Banheiros e Fraldário, Praça de Alimentação, Lojas e Cinema ou Serviços e ajuda; o CapiBot pergunta se quer **a localização** (mapa com a rota dourada) ou **fazer uma reclamação** (pede o nome e depois o texto, e devolve um protocolo `BO-XXXX`). A equipe aceita ou recusa (com motivo) e conclui no painel; o chat avisa o visitante, que confirma "Deu certo?" (ou reabre) e avalia de 1 a 5.
+
+- Banco: `data/capibot.sqlite` (criado e migrado automaticamente; migrações em `src/server/db/migrations`, 001–003). Fotos em `uploads/`.
+- Com `NEXT_PUBLIC_USE_MOCKS=true` o front usa respostas simuladas que **não** têm esse fluxo; use `false` e reinicie o `next dev`.
+- **Atenção:** o painel e as fotos não têm autenticação. Antes de publicar, restrinja o acesso por rede ou proxy.
+- Deploy: Render (Web Service Node) com disco persistente em `/data` e `/uploads`; env `GEMINI_API_KEY` (opcional); build `npm run build`, start `npm start`. O plano gratuito dorme: acorde 5 min antes da demo. Não usar Vercel (SQLite em disco).

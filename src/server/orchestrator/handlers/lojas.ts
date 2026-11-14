@@ -1,5 +1,5 @@
 import { getRoute, getStore, getStoreLandmark, searchStores } from "@/server/maps/service";
-import { bot, R, stripEmoji, TALK_TO_PERSON } from "../replies";
+import { bot, MAIN_QUICK_REPLIES, R, stripEmoji } from "../replies";
 import type { Ctx, HandlerResult } from "../states";
 
 export function lojasPrompt(): HandlerResult {
@@ -27,7 +27,7 @@ export function routeToStore(ctx: Ctx, storeId: string): HandlerResult | null {
     state: "livre",
     lastDestId: storeId,
     messages: [
-      bot({ text: R.lojaSemRota(store.floor, getStoreLandmark(storeId)), quickReplies: [TALK_TO_PERSON] }),
+      bot({ text: R.lojaSemRota(store.floor, getStoreLandmark(storeId)), quickReplies: MAIN_QUICK_REPLIES }),
     ],
   };
 }

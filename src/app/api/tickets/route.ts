@@ -16,6 +16,8 @@ export async function POST(req: Request) {
       category: str(form.get("category")),
       text: str(form.get("text")),
       transcript: str(form.get("transcript")),
+      contact: str(form.get("contact")),
+      kind: str(form.get("kind")),
       photo: photo instanceof File ? photo : null,
     });
     return NextResponse.json(created, { status: 201 });
