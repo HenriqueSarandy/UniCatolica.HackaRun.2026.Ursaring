@@ -1,8 +1,18 @@
 # UniCatolica.HackaRun.2026.Ursaring
 MonoRepo com todas as soluções necessárias para o Hackathon
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-07. Atendimento e experiência de serviços
+Equipe Ursaring #10
+    
+- Henrique Sarandy (dev)
+- Miqueias Braz (dev)
+- Pedro Tavares (dev)
+- Lucas Aires (dev)
+- Neuton Melo (mentor)
+- Honorio Henrique (mentor)
+
+Apresentação Pitch (90s): https://youtbe.com/shorts/nOQKM_Es_K0?is=rw9iDS63CDrZ92_
+
+## Atendimento e experiência de serviços
 Contexto: Os visitantes podem precisar de orientações, informações, registrar reclamações ou resolver situações inesperadas durante sua permanência no shopping.
 
 Problemática: A experiência de atendimento pode ser prejudicada quando as necessidades dos visitantes não são compreendidas ou resolvidas com agilidade.
@@ -12,14 +22,12 @@ Objetivo: Melhorar a experiência dos visitantes no acesso aos serviços e no re
 Capim Dourado Shopping — Atendimento e Experiência de Serviços
 
 Entrega de Planejamento Técnico Prazo: sexta-feira, 13/11, até 12h Foco: planejamento e definição técnica inicial (não é o MVP final)
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-Proposta e estrutura inicial das telas
+## Proposta e estrutura inicial das telas
 
 CapiBot, a assistente do Capim Dourado Shopping · Web app mobile-first
 
-Ideia geral
+### Ideia geral
 
 CapiBot é uma chatbot que vive em um web app mobile-first: a pessoa não instala nada e não precisa de conta. Basta apontar a câmera do 
 celular para um QR Code no shopping, e o navegador abre direto a conversa com o CapiBot. Na tela de entrada aparecem as perguntas mais 
@@ -27,7 +35,7 @@ frequentes dos visitantes, e também é possível fazer perguntas livres, por te
 shopping (lojas, horários, serviços, eventos e mapa), o CapiBot responde sobre o Capim Dourado, melhora a experiência de quem está ali e 
 ajuda no funcionamento dinâmico do shopping, avisando a equipe quando alguém precisa de ajuda.
 
-Visual
+### Visual
 
 • Cores: fundo creme claro (#FFF8E1), texto marrom-escuro quase preto (#2B1D00) e botões dourados (#F2B705) com texto preto. É uma 
 referência ao capim dourado, e o contraste passa de 10:1. Há um botão para alto contraste (preto e amarelo) e outro para modo escuro.
@@ -37,7 +45,7 @@ referência ao capim dourado, e o contraste passa de 10:1. Há um botão para al
 • Formato: tela de conversa em coluna única, pensada primeiro para o celular. Em telas maiores, a mesma conversa fica centralizada, 
 sem mudar o jeito de usar.
 
-Como é cada parte da tela
+### Como é cada parte da tela
 
 O ponto de partida: o mundo físico (antes da Tela 1)
 A mágica começa no próprio shopping. Em todas as portas de entrada e em pontos estratégicos de algumas lojas âncoras (como na frente 
