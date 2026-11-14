@@ -1,6 +1,6 @@
 # TechSpec 02 — Backend: Sessões, Orquestrador e IA (Dev 2)
 
-> **Status (pós-implementação).** O texto abaixo é o planejamento original. O que vale hoje está na [TechSpec 05](05-ciclo-atendimento.md). Divergências principais:
+> **Status (pós-implementação).** O texto abaixo é o planejamento original. O que vale hoje está em [docs/atendimento/](../atendimento/README.md). Divergências principais:
 > - **Os botões não respondem mais direto.** Cada tópico (`banheiros`, `alimentacao`, `lojas`, `servicos`) responde "O que você quer fazer?" com `loc:<tópico>` (localização/mapa) e `rec:<tópico>` (reclamação). "Serviços e ajuda" substitui "Resolver um B.O. / Serviços"; sua localização é a rota até o SAC.
 > - **Estados:** `servicos` deixou de ser usado; surgiram `livre_sem_resposta`, `rec_nome|<tópico>` e `rec_texto|<tópico>|<nome>` (reclamação feita pela conversa, que cria o chamado via `createTicket`).
 > - "Falar com uma pessoa" foi removido de todas as respostas e do prompt do Gemini; no lugar, "Não ajudou" e a 2ª resposta sem solução oferecem **Fazer uma reclamação**.
