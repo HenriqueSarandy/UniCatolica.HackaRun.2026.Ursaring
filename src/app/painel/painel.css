@@ -1,0 +1,36 @@
+.pn, .pn-login { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+.pn-login { max-width: 420px; }
+.pn-login form { display: flex; flex-direction: column; gap: 1rem; }
+.pn-login label { display: flex; flex-direction: column; gap: 0.25rem; font-weight: 700; }
+.pn-login input {
+  min-height: 48px; padding: 0 1rem; background: var(--bubble-bot);
+  border: 2px solid var(--border); border-radius: var(--radius);
+}
+.pn-top { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+.pn-top h1 { flex: 1; margin: 0; font-size: 1.5rem; }
+.pn-secondary { background: var(--bubble-bot); }
+.pn-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+.pn-tab[aria-selected="true"] { outline: 3px solid var(--fg); outline-offset: 2px; }
+.pn-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+.pn-empty { grid-column: 1 / -1; text-align: center; font-size: 1.25rem; }
+.pn-offline { background: var(--fg); color: var(--bg); padding: 0.5rem 1rem; border-radius: var(--radius); }
+.pn-error { color: #B00020; font-weight: 700; margin: 0.25rem 0; }
+.pn-card {
+  background: var(--bubble-bot); border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 1rem; overflow-wrap: anywhere;
+}
+.pn-card header { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.pn-card p { margin: 0.25rem 0; }
+.pn-high { border-width: 4px; }
+.pn-new { background: var(--bubble-user); }
+.pn-badge { background: #B00020; color: #fff; font-weight: 700; padding: 0 0.5rem; border-radius: 8px; }
+.pn-point { font-size: 1.25rem; font-weight: 700; }
+.pn-thumb { padding: 0; border: 2px solid var(--border); border-radius: 12px; background: none; cursor: zoom-in; }
+.pn-thumb img { display: block; width: 120px; height: 90px; object-fit: cover; border-radius: 10px; }
+.pn-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; align-items: center; }
+.pn-confirm { display: inline-flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.pn-lightbox {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 10;
+  display: flex; flex-direction: column; gap: 1rem; align-items: center; justify-content: center; padding: 1rem;
+}
+.pn-lightbox img { max-width: 100%; max-height: 80dvh; object-fit: contain; }

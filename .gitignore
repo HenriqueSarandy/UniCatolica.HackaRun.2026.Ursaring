@@ -28,3 +28,4 @@ Thumbs.db
 # data / uploads
 data/*.sqlite*
 uploads/
+.tmp-uploads/

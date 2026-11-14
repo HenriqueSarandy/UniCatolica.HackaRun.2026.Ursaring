@@ -53,7 +53,7 @@ export async function createTicket(form: FormData): Promise<TicketCreated> {
   return request("/api/tickets", { method: "POST", body: form });
 }
 
-export async function getTicket(id: string): Promise<TicketPublic> {
+export async function getTicket(id: string, sessionId: string): Promise<TicketPublic> {
   if (USE_MOCKS) return { id, status: "novo", updatedAt: new Date().toISOString() };
-  return request(`/api/tickets/${encodeURIComponent(id)}`);
+  return request(`/api/tickets/${encodeURIComponent(id)}?sessionId=${encodeURIComponent(sessionId)}`);
 }
