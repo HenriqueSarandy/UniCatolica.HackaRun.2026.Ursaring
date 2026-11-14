@@ -1,5 +1,3 @@
-// STUB TEMPORÁRIO (Dev 1) copiado de docs/techspecs/README.md.
-// Substituir pelo arquivo oficial do Dev 2 quando ele chegar na main.
 export type PointId = string;
 export type QuickReplyId = "banheiros" | "alimentacao" | "lojas" | "servicos";
 

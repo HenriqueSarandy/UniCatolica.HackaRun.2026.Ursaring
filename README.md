@@ -121,3 +121,17 @@ Plataformas e tecnologias adotadas
 • Next.js (React, TypeScript e Node.js)
 • SQLite
 
+
+## Backend (Dev 2) — como rodar
+
+```bash
+npm install
+cp .env.example .env.local   # preencha GEMINI_API_KEY (opcional: sem chave usa fallback local)
+npm run dev                  # http://localhost:3000
+npm test                     # Vitest
+npm run smoke                # smoke test via PowerShell (servidor rodando)
+```
+
+- Banco: `data/capibot.sqlite` (criado e migrado automaticamente; migrações em `src/server/db/migrations`).
+- `src/server/maps/service.ts` é um **stub** do Dev 3 — será substituído mantendo as assinaturas.
+- Deploy: Render (Web Service Node) com disco persistente em `/data` e `/uploads`; env `GEMINI_API_KEY`, `PANEL_PASSWORD`, `SESSION_SECRET`; build `npm run build`, start `npm start`. O plano gratuito dorme — acorde 5 min antes da demo. Não usar Vercel (SQLite em disco).
