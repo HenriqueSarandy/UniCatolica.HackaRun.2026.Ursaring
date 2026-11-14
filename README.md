@@ -89,40 +89,35 @@ Acessibilidade em todas as telas
 
 Linguagem de programação escolhida
 
-Python no servidor e HTML, CSS e JavaScript na tela
+Next.js (TypeScript) no front-end e no servidor, com SQLite como banco de dados
 
-• Interface (front-end): HTML para a estrutura da tela, CSS para as cores, os botões grandes e o layout mobile-first, e JavaScript básico só para mostrar as mensagens na conversa. A foto vem de um campo <input type="file" accept="image/*" capture>, que já abre a câmera do celular sem código extra.
-• Servidor (back-end): Python com Flask, um framework pequeno em que cada tela é uma função. Ele recebe as mensagens, decide a resposta e salva os chamados.
-• Banco de dados: SQLite, que já vem com o Python e é um único arquivo. Guarda as sessões, o ponto de origem de cada pessoa e os chamados de B.O. As fotos ficam numa pasta uploads/.
-• Inteligência: os 4 botões respondem com regras simples em Python (if/else), sem IA, o que garante respostas certas e rápidas. As perguntas livres vão para a API do Gemini, junto com a base do shopping (base-shopping.json: lojas, horários, serviços, eventos e pontos do mapa), que o Python lê e envia como contexto.
+• Interface (front-end): Next.js com React (App Router), CSS para as cores, os botões grandes e o layout mobile-first, e componentes React para mostrar as mensagens na conversa. A foto vem de um campo <input type="file" accept="image/*" capture>, que já abre a câmera do celular sem código extra.
+• Servidor (back-end): as Route Handlers (API Routes) do próprio Next.js, no mesmo projeto da interface. Elas recebem as mensagens, decidem a resposta e salvam os chamados.
+• Banco de dados: SQLite, um único arquivo, acessado pelo Node.js com a biblioteca better-sqlite3 (ou Prisma/Drizzle, se a equipe preferir um ORM). Guarda as sessões, o ponto de origem de cada pessoa e os chamados de B.O. As fotos ficam numa pasta uploads/.
+• Inteligência: os 4 botões respondem com regras simples em TypeScript (if/else), sem IA, o que garante respostas certas e rápidas. As perguntas livres vão para a API do Gemini, junto com a base do shopping (base-shopping.json: lojas, horários, serviços, eventos e pontos do mapa), que o servidor Next.js lê e envia como contexto.
 • Voz: o microfone usa o reconhecimento de voz do próprio navegador (Web Speech API), que transforma a fala em texto, e o botão Ouvir usa a síntese de voz do navegador. Não tem custo nem instalação. Funciona melhor no Chrome, por isso o campo de texto sempre existe como alternativa.
-• Mapas e rotas: a planta é um arquivo SVG (imagem vetorial). Na primeira versão, a rota dourada de cada par "origem → destino" é desenhada à mão e guardada em um arquivo JSON. Como evolução, o Python calcula o caminho com o algoritmo de Dijkstra.
-• Painel da equipe: uma página HTML protegida por senha, que consulta o servidor a cada poucos segundos e mostra os chamados novos, com local, foto, texto e horário.
+• Mapas e rotas: a planta é um arquivo SVG (imagem vetorial). Na primeira versão, a rota dourada de cada par "origem → destino" é desenhada à mão e guardada em um arquivo JSON. Como evolução, o servidor calcula o caminho com o algoritmo de Dijkstra.
+• Painel da equipe: uma página do Next.js protegida por senha, que consulta o servidor a cada poucos segundos e mostra os chamados novos, com local, foto, texto e horário.
 • Testes: testes manuais no celular e no modo celular do navegador, checagem de acessibilidade com o Lighthouse do Chrome e teste com leitor de tela (TalkBack no Android).
 
 Arquitetura proposta
 
 Fluxo de ponta a ponta:
 1.  Totem com QR Code e NFC → endereço do web app com o ponto de origem (?p=entrada-principal).
-2.  Web app (celular da pessoa): páginas em HTML, CSS e JavaScript abertas no navegador, com conversa, microfone, câmera e mapas.
-3.  Servidor do CapiBot (Python + Flask), com estes módulos:
+2.  Web app (celular da pessoa): páginas em Next.js (React) abertas no navegador, com conversa, microfone, câmera e mapas.
+3.  Servidor do CapiBot (Next.js, Route Handlers em TypeScript), com estes módulos:
     ◦ Sessões: guarda de qual QR a pessoa veio.
     ◦ Orquestrador: controla em qual das 4 telas a pessoa está e qual resposta dar.
     ◦ IA: Gemini + base do shopping, para perguntas livres.
     ◦ Chamados de B.O.: cria o chamado, guarda a foto e avisa a equipe.
     ◦ Rotas: escolhe o SVG com a rota dourada para o par origem e destino.
 4.  SQLite + pasta uploads/: sessões, chamados e fotos.
-5.  Painel da equipe (página HTML com senha): atualiza sozinha a cada poucos segundos, com os chamados novos, e permite marcar como "assumido" ou "concluído".
+5.  Painel da equipe (página Next.js com senha): atualiza sozinha a cada poucos segundos, com os chamados novos, e permite marcar como "assumido" ou "concluído".
 6.  FAQ web acessível: versão em página simples das perguntas frequentes, para quem não quiser conversar.
-7.  Hospedagem: Render (plano gratuito) ou o notebook da equipe durante a apresentação.
+7.  Hospedagem: Render (plano gratuito, rodando o Next.js em Node.js) ou o notebook da equipe durante a apresentação. Como o SQLite é um arquivo local, a hospedagem precisa ter disco persistente (serviços serverless, como a Vercel, não servem para isso).
 
 Plataformas e tecnologias adotadas
 
-• GitHub
-• VSCode
-• Fedora
-• Gemini
-• Claude
-• Python 3, Flask e SQLite
-• Lighthouse (Chrome)
+• Next.js (React, TypeScript e Node.js)
+• SQLite
 
