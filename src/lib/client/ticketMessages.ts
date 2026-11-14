@@ -6,6 +6,12 @@ let seq = 0;
 const mid = () => `tk-${Date.now()}-${++seq}`;
 
 /** Mensagem do CapiBot para uma mudança de status do chamado (ou null se não há o que dizer). */
+/** Frase com pontuação final única (a equipe pode ou não ter escrito ponto). */
+const sentence = (prefix: string, note?: string | null) => {
+  const n = note?.trim();
+  return n ? ` ${prefix}: ${n}${/[.!?]$/.test(n) ? "" : "."}` : "";
+};
+
 export function statusMessage(t: TicketPublic): BotMessage | null {
   if (t.status === "assumido") {
     return {
@@ -17,12 +23,12 @@ export function statusMessage(t: TicketPublic): BotMessage | null {
   if (t.resolutionCode === "improcedente") {
     return {
       id: mid(), role: "bot", sticker: "padrao",
-      text: `A equipe não pôde atender o pedido ${t.id}.${t.resolutionNote ? ` Motivo: ${t.resolutionNote}.` : ""} Se precisar, procure o SAC, no piso 1.`,
+      text: `A equipe não pôde atender o pedido ${t.id}.${sentence("Motivo", t.resolutionNote)} Se precisar, procure o SAC, no piso 1.`,
     };
   }
   return {
     id: mid(), role: "bot", sticker: "feliz",
-    text: `Seu pedido ${t.id} foi concluído.${t.resolutionNote ? ` Resolução: ${t.resolutionNote}.` : ""} Deu certo?`,
+    text: `Seu pedido ${t.id} foi concluído.${sentence("Resolução", t.resolutionNote)} Deu certo?`,
     quickReplies: [
       { id: `fb-sim:${t.id}`, label: "Sim, obrigado" },
       ...(t.canReopen !== false ? [{ id: `fb-nao:${t.id}`, label: "Ainda não" }] : []),

@@ -142,6 +142,14 @@ npm run smoke                # smoke via PowerShell (servidor rodando)
 
 **Fluxo do chat:** o visitante escolhe Banheiros e Fraldário, Praça de Alimentação, Lojas e Cinema ou Serviços e ajuda; o CapiBot pergunta se quer **a localização** (mapa com a rota dourada) ou **fazer uma reclamação** (pede o nome e depois o texto, e devolve um protocolo `BO-XXXX`). A equipe aceita ou recusa (com motivo) e conclui no painel; o chat avisa o visitante, que confirma "Deu certo?" (ou reabre) e avalia de 1 a 5.
 
+| Início | Localização | Reclamação registrada |
+|---|---|---|
+| ![Início](docs/img/01-chat-inicio.png) | ![Mapa](docs/img/03-chat-mapa.png) | ![Protocolo](docs/img/05-chat-protocolo.png) |
+
+![Painel da equipe](docs/img/06-painel-novos.png)
+
+Mais capturas (aceite, conclusão, indicadores, `/atendimento`, `/faq`) na [TechSpec 05](docs/techspecs/05-ciclo-atendimento.md).
+
 - Banco: `data/capibot.sqlite` (criado e migrado automaticamente; migrações em `src/server/db/migrations`, 001–003). Fotos em `uploads/`.
 - Com `NEXT_PUBLIC_USE_MOCKS=true` o front usa respostas simuladas que **não** têm esse fluxo; use `false` e reinicie o `next dev`.
 - **Atenção:** o painel e as fotos não têm autenticação. Antes de publicar, restrinja o acesso por rede ou proxy.

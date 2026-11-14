@@ -16,6 +16,12 @@
 
 Há ainda o `/faq` (página estática, sem JavaScript necessário).
 
+| Tela 2 — `/atendimento` | `/faq` |
+|---|---|
+| ![Formulário de reclamações e serviços](../img/11-atendimento.png) | ![Perguntas frequentes](../img/12-faq.png) |
+
+> Capturas feitas no celular (390 px) e no desktop (1280 px) com o app em desenvolvimento. Os chamados que aparecem têm o prefixo `[demo]` e foram removidos do banco depois.
+
 ## 2. Fluxo do chat (Tela 1)
 
 ```
@@ -46,6 +52,20 @@ Regras:
 - Não há avisos dinâmicos (foram descartados).
 - Tópico → categoria do chamado: `banheiros → banheiro`, `servicos → reclamacao`, `alimentacao` e `lojas → outro`. Todos entram como `kind = reclamacao`; a identificação vai em `contact` como `Nome: <texto>`.
 
+**Capturas do fluxo** (celular, ponto `frente-cea`):
+
+| 1. Início | 2. Escolha | 3. Localização |
+|---|---|---|
+| ![Saudação com os 4 botões](../img/01-chat-inicio.png) | ![Pergunta: localização ou reclamação](../img/02-chat-escolha.png) | ![Mapa com a rota dourada até o banheiro](../img/03-chat-mapa.png) |
+
+| 4. Texto da reclamação | 5. Protocolo | 6. Aceito pela equipe |
+|---|---|---|
+| ![Pede o texto da reclamação depois do nome](../img/04-chat-reclamacao-texto.png) | ![Reclamação registrada com protocolo](../img/05-chat-protocolo.png) | ![Pedido aceito por Marcos](../img/07-chat-aceito.png) |
+
+| 7. Concluído: "Deu certo?" |
+|---|
+| ![Resolução e botões Sim, obrigado e Ainda não](../img/09-chat-resolvido.png) |
+
 ### Máquina de estados (`sessions.state`)
 
 | Estado | Significado |
@@ -73,6 +93,20 @@ Ids `fb-sim:<BO>`, `fb-nao:<BO>` e `rate-<n>:<BO>` são tratados **no cliente** 
 - Recusar grava `resolution_code = improcedente` (não há status "recusado" separado).
 - SLA: `SLA_MINUTES = { alta: 3, normal: 5 }`. Passou do prazo e ainda `novo` → **ATRASADO**. Passou de 2× o prazo → escalado automaticamente na próxima listagem (sem cron): prioridade `alta`, setor `seguranca`, evento `escalado`.
 - Indicadores (`GET /api/panel/metrics?days=`): pedidos, em aberto, reclamações, recusados, reabertos, tempo médio até aceitar/concluir, % aceitos no prazo, nota média, e barras por local, assunto e setor, com destaque "Onde melhorar".
+
+**Capturas do painel** (desktop):
+
+![Painel: chamado novo com identificação e ações Aceitar, Recusar, Escalar e Concluir](../img/06-painel-novos.png)
+
+*Chamado novo: local de origem, assunto, setor, identificação, texto e ações.*
+
+![Painel: concluindo o chamado com resultado e mensagem ao visitante](../img/08-painel-concluir.png)
+
+*Concluir: resultado e mensagem que o visitante verá no chat.*
+
+![Painel: aba Indicadores](../img/10-painel-indicadores.png)
+
+*Aba Indicadores, com dados de demonstração (`npm run seed:demo`).*
 
 ## 4. Resolução e feedback do visitante
 
@@ -134,7 +168,7 @@ Variáveis: `GEMINI_API_KEY`, `GEMINI_MODEL`, `BASE_URL` (QR), `CAPIBOT_DB`, `UP
 ## 9. Testes
 
 Vitest (`src/server/__tests__/`): categorização (kind/setor), transições de chamado, conclusão com nota, avaliação, reabertura (1×, janela, sessão), escalonamento e transferência, recusa sem vazar contato, indicadores, e o orquestrador (saudação, escolha localização/reclamação, mapas, fluxo completo de reclamação com identificação, ausência de "Falar com uma pessoa", botões ao fim do assunto).
-Validado manualmente pela API (ciclo completo: orientar → criar com foto → aceitar → concluir → reabrir → recusar → avaliar → indicadores). **Ainda não verificados:** a interface no navegador/celular (voz, câmera, aba Indicadores), TalkBack e Lighthouse.
+Validado manualmente pela API (ciclo completo: orientar → criar com foto → aceitar → concluir → reabrir → recusar → avaliar → indicadores). O chat, o painel (incluindo Indicadores), `/atendimento` e `/faq` foram percorridos num navegador (Edge, janela de celular e de desktop) e as capturas estão acima. **Ainda não verificados:** um celular físico, microfone e câmera, TalkBack e Lighthouse.
 
 ## 10. Limitações conhecidas
 
