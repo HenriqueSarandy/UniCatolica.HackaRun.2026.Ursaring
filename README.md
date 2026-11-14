@@ -10,7 +10,7 @@ Equipe Ursaring #10
 - Neuton Melo (mentor)
 - Honorio Henrique (mentor)
 
-Apresentação Pitch (90s): https://youtbe.com/shorts/nOQKM_Es_K0?is=rw9iDS63CDrZ92_
+Apresentação Pitch (90s): https://youtube.com/shorts/nOQKM_Es_K0?is=rw9iDS63CDrZ92_
 
 ## Atendimento e experiência de serviços
 Contexto: Os visitantes podem precisar de orientações, informações, registrar reclamações ou resolver situações inesperadas durante sua permanência no shopping.
