@@ -29,3 +29,8 @@ Thumbs.db
 data/*.sqlite*
 uploads/
 .tmp-uploads/
+
+# builds de instâncias extras do next dev
+.next-*
+
+certificates

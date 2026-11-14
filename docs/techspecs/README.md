@@ -1,6 +1,6 @@
 # TechSpecs do MVP — CapiBot (Capim Dourado Shopping)
 
-Quatro TechSpecs para quatro devs trabalharem **em paralelo**. Cada dev é dono de um conjunto de pastas e conversa com os outros apenas pelos **contratos** deste documento.
+Quatro TechSpecs para quatro devs trabalharem **em paralelo**, mais uma quinta que documenta o fluxo integrado. Cada dev é dono de um conjunto de pastas e conversa com os outros apenas pelos **contratos** deste documento.
 
 | # | TechSpec | Dono de | Resumo |
 |---|----------|---------|--------|
@@ -8,6 +8,9 @@ Quatro TechSpecs para quatro devs trabalharem **em paralelo**. Cada dev é dono 
 | 2 | [02-backend-orquestrador-ia.md](02-backend-orquestrador-ia.md) | `src/server/db`, `src/server/orchestrator`, `src/server/ai`, `src/app/api/session`, `src/app/api/chat` | Sessões, regras dos 4 botões, Gemini, SQLite base |
 | 3 | [03-mapas-rotas-base.md](03-mapas-rotas-base.md) | `data/`, `public/maps`, `src/server/maps`, `src/components/map`, `src/app/api/stores`, `src/app/api/route` | `base-shopping.json`, SVG, rotas douradas, MapView |
 | 4 | [04-chamados-painel-faq.md](04-chamados-painel-faq.md) | `src/server/tickets`, `src/app/api/tickets`, `src/app/api/panel`, `src/app/painel`, `src/app/faq` | Chamados de B.O., uploads, painel da equipe, FAQ |
+| 5 | [05-ciclo-atendimento.md](05-ciclo-atendimento.md) | integração (todas as pastas acima) | **Fluxo atual implementado:** tópico → localização ou reclamação, chamado com identificação, aceitar/recusar, feedback, SLA e indicadores |
+
+> **Leia a 05 primeiro.** As TechSpecs 01–04 são o planejamento original e têm um quadro "Status" no topo com o que mudou. Onde divergirem, vale a 05.
 
 ## Stack (fixa para todos)
 
@@ -24,13 +27,14 @@ Next.js (App Router) + TypeScript + React, Route Handlers, SQLite via `better-sq
 /src/app/painel/  /src/app/faq/     -> Dev 4
 /src/app/api/session, chat          -> Dev 2
 /src/app/api/stores, route          -> Dev 3
-/src/app/api/tickets, panel, uploads-> Dev 4
+/src/app/api/tickets, panel, uploads-> Dev 4   (panel = tickets, metrics)
+/src/app/atendimento/               -> Tela 2 (reclamações e serviços)
 /src/components/chat/               -> Dev 1
 /src/components/map/                -> Dev 3
 /src/server/db/                     -> Dev 2 (cliente + runner de migrações)
 /src/server/orchestrator, ai/       -> Dev 2
 /src/server/maps/                   -> Dev 3
-/src/server/tickets/                -> Dev 4
+/src/server/tickets/                -> Dev 4 (service, categorize, uploads, metrics)
 /src/types/contracts.ts             -> compartilhado (ver abaixo)
 ```
 
@@ -65,7 +69,8 @@ export interface BotMessage {
   sticker?: "padrao" | "inteligente" | "seguranca" | "feliz";
   quickReplies?: QuickReply[];
   map?: MapPayload;
-  suggestInput?: "loja" | "bo";          // dica de UI: autocompletar de lojas / abrir painel de B.O.
+  suggestInput?: "loja" | "bo";          // dica de UI: autocompletar de lojas ("bo" não é mais emitido pelo chat)
+  ticketId?: string;                     // chamado criado nesta resposta; o chat passa a acompanhá-lo
 }
 
 export interface SessionResponse { sessionId: string; point: { id: PointId; name: string }; }
@@ -81,9 +86,15 @@ export interface ChatResponse { messages: BotMessage[]; }
 export interface StoreSummary { id: string; name: string; floor: number; category: string; }
 
 export type TicketStatus = "novo" | "assumido" | "concluido";
-export type TicketCategory = "carro" | "objeto_perdido" | "cadeira_de_rodas" | "banheiro" | "falar_com_pessoa" | "outro";
+export type TicketCategory = "carro" | "objeto_perdido" | "cadeira_de_rodas" | "banheiro" | "falar_com_pessoa" | "reclamacao" | "outro";
+export type TicketKind = "ajuda" | "reclamacao" | "sugestao";
+export type TicketTeam = "seguranca" | "sac" | "manutencao" | "limpeza";
+export type ResolutionCode = "resolvido" | "encaminhado" | "nao_localizado" | "improcedente";
 export interface TicketCreated { ticketId: string; status: TicketStatus; etaMinutes: number; }
-export interface TicketPublic { id: string; status: TicketStatus; assignedTo?: string; updatedAt: string; }
+export interface TicketPublic {
+  id: string; status: TicketStatus; assignedTo?: string; updatedAt: string;
+  kind?: TicketKind; resolutionNote?: string; resolutionCode?: ResolutionCode; rating?: number; canReopen?: boolean;
+}
 ```
 
 ### Endpoints
@@ -94,12 +105,15 @@ export interface TicketPublic { id: string; status: TicketStatus; assignedTo?: s
 | `POST /api/chat` | Dev 2 | `ChatRequest` | `ChatResponse` |
 | `GET /api/stores?q=` | Dev 3 | query | `StoreSummary[]` (máx. 8) |
 | `GET /api/route?from=&to=` | Dev 3 | ids de ponto/loja | `MapPayload` ou 404 |
-| `POST /api/tickets` | Dev 4 | multipart: `sessionId`, `category?`, `text?`, `transcript?`, `photo?` | `TicketCreated` |
-| `GET /api/tickets/:id` | Dev 4 | — | `TicketPublic` |
-| `POST /api/panel/login` | Dev 4 | `{ password }` | cookie httpOnly |
-| `GET /api/panel/tickets` | Dev 4 | cookie | lista completa |
-| `PATCH /api/panel/tickets/:id` | Dev 4 | `{ action: "assumir"\|"concluir", staffName }` | ticket atualizado |
-| `GET /api/uploads/:file` | Dev 4 | cookie | arquivo (só equipe) |
+| `POST /api/tickets` | Dev 4 | multipart: `sessionId`, `category?`, `kind?`, `text?`, `transcript?`, `contact?`, `photo?` | `TicketCreated` |
+| `GET /api/tickets/:id?sessionId=` | Dev 4 | — | `TicketPublic` |
+| `POST /api/tickets/:id/feedback` | Dev 4 | `{ sessionId, resolved, rating?, text? }` | `TicketPublic` (`resolved=false` reabre) |
+| `GET /api/panel/tickets` | Dev 4 | `?status=` | lista completa (**sem login**) |
+| `PATCH /api/panel/tickets/:id` | Dev 4 | `{ action: "assumir"\|"concluir"\|"recusar"\|"nota"\|"escalar"\|"transferir", staffName, ... }` | ticket atualizado |
+| `GET /api/panel/metrics` | Dev 4 | `?days=` | indicadores |
+| `GET /api/uploads/:file` | Dev 4 | — | arquivo (**sem login**) |
+
+`POST /api/panel/login` e `/logout` foram **removidos**: o painel não tem senha.
 
 ### Interfaces internas (chamadas entre módulos do servidor)
 
@@ -124,14 +138,14 @@ export function runMigrations(): void;                           // executa src/
 
 ### Banco de dados
 
-Um arquivo `data/capibot.sqlite` (gitignored). Dev 2 cria o runner; **cada dev adiciona sua migração** em `src/server/db/migrations/NNN_nome.sql` (Dev 2: `001_sessions.sql`; Dev 4: `002_tickets.sql`). Sem conflitos, pois cada tabela tem um dono.
+Um arquivo `data/capibot.sqlite` (gitignored). Dev 2 cria o runner; **cada dev adiciona sua migração** em `src/server/db/migrations/NNN_nome.sql` (Dev 2: `001_sessions.sql`; Dev 4: `002_tickets.sql` e `003_atendimento.sql`). Sem conflitos, pois cada tabela tem um dono.
 
 ### IDs e convenções
 
 - IDs de pontos/lojas em *kebab-case* ASCII: `entrada-principal`, `loja-pernambucanas`, `banheiro-sul`.
 - Pontos de QR (`?p=`) são nós do grafo em `base-shopping.json` (Dev 3 define a lista; Dev 1 usa só para testes).
 - Datas em ISO 8601 UTC. Textos para o usuário em pt-BR.
-- Variáveis de ambiente (`.env.local`, template em `.env.example`, criado por Dev 2): `GEMINI_API_KEY`, `PANEL_PASSWORD`, `SESSION_SECRET`.
+- Variáveis de ambiente (`.env.local`, template em `.env.example`): `GEMINI_API_KEY` (opcional), `GEMINI_MODEL`, `BASE_URL`. Outras: `CAPIBOT_DB`, `UPLOADS_DIR`, `NEXT_PUBLIC_USE_MOCKS`, `NEXT_DIST_DIR`. `PANEL_PASSWORD` e `SESSION_SECRET` **não são mais usadas**.
 
 ## Ordem de integração sugerida
 
@@ -142,4 +156,4 @@ Um arquivo `data/capibot.sqlite` (gitignored). Dev 2 cria o runner; **cada dev a
 
 ## Fora do escopo do MVP
 
-Dijkstra (rotas pré-desenhadas bastam), NFC, múltiplos idiomas, autenticação de usuário final, notificação push para a equipe, SSE/WebSocket (usa polling).
+Dijkstra (rotas pré-desenhadas bastam), NFC, múltiplos idiomas, autenticação de usuário final **e da equipe (o painel é aberto)**, notificação push para a equipe, SSE/WebSocket (usa polling).

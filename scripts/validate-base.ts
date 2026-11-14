@@ -30,6 +30,17 @@ for (const e of kb.eventos) {
   if (!e.nome || !e.onde) err("evento incompleto");
 }
 
+// orientações: destino deve existir e ter rota desenhada
+for (const o of kb.orientacoes) {
+  if (o.destino && !pontos.has(o.destino)) err(`orientação ${o.id}: destino inexistente (${o.destino})`);
+}
+{
+  const ids = kb.orientacoes.map((o) => o.id);
+  for (const need of ["carro", "objeto_perdido", "cadeira_de_rodas", "banheiro", "emergencia", "reclamacao"]) {
+    if (!ids.includes(need)) err(`orientação obrigatória ausente: ${need}`);
+  }
+}
+
 // mínimos da demo
 const min = (cond: boolean, msg: string) => { if (!cond) err(msg); };
 const qrs = kb.pontos.filter((p) => p.qr);

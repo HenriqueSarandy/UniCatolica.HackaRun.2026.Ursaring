@@ -2,9 +2,10 @@ import { describe, expect, it } from "vitest";
 import { createSession } from "@/server/db/sessions";
 import { categorize } from "@/server/tickets/categorize";
 import { sniffImage } from "@/server/tickets/uploads";
-import { signToken, verifyPassword, verifyToken, STAFF_TTL_SECONDS } from "@/server/tickets/auth";
+import { getMetrics } from "@/server/tickets/metrics";
 import {
-  assumeTicket, closeTicket, createTicket, getPublicTicket, listTickets, TicketError,
+  addNote, assumeTicket, closeTicket, createTicket, escalateTicket, getPublicTicket, listTickets,
+  rateTicket, reopenTicket, TicketError, transferTicket,
 } from "@/server/tickets/service";
 
 describe("categorize", () => {
@@ -16,7 +17,7 @@ describe("categorize", () => {
   });
   it("prioridade alta para emergência e cadeira de rodas", () => {
     expect(categorize("socorro, ele desmaiou").priority).toBe("alta");
-    expect(categorize("preciso de uma cadeira de rodas")).toEqual({ category: "cadeira_de_rodas", priority: "alta" });
+    expect(categorize("preciso de uma cadeira de rodas")).toMatchObject({ category: "cadeira_de_rodas", priority: "alta" });
     expect(categorize("preciso de EMERGÊNCIA").priority).toBe("alta");
     expect(categorize("só uma dúvida").priority).toBe("normal");
   });
@@ -35,22 +36,6 @@ describe("magic bytes", () => {
   it("rejeita outros conteúdos", () => {
     expect(sniffImage(new TextEncoder().encode("<svg onload=alert(1)>"))).toBeNull();
     expect(sniffImage(new Uint8Array([]))).toBeNull();
-  });
-});
-
-describe("auth", () => {
-  it("compara a senha", () => {
-    expect(verifyPassword("senha-de-teste")).toBe(true);
-    expect(verifyPassword("errada")).toBe(false);
-  });
-  it("valida token, expiração e adulteração", () => {
-    const t0 = 1_700_000_000_000;
-    const token = signToken(t0)!;
-    expect(verifyToken(token, t0 + 1000)).toBe(true);
-    expect(verifyToken(token, t0 + STAFF_TTL_SECONDS * 1000 + 1)).toBe(false);
-    const [payload, sig] = token.split(".");
-    expect(verifyToken(`${Number(payload) + 99999999}.${sig}`, t0)).toBe(false);
-    expect(verifyToken(undefined)).toBe(false);
   });
 });
 
@@ -97,5 +82,75 @@ describe("tickets", () => {
     await expect(createTicket({ sessionId: s.id, photo: fake })).rejects.toMatchObject({ status: 415 });
     for (let i = 0; i < 5; i++) await createTicket({ sessionId: s.id, text: `chamado ${i}` });
     await expect(createTicket({ sessionId: s.id, text: "sexto" })).rejects.toMatchObject({ status: 429 });
+  });
+});
+
+describe("resolução, feedback e reabertura", () => {
+  it("categoriza reclamação e setor", () => {
+    expect(categorize("o atendimento foi péssimo")).toMatchObject({ kind: "reclamacao", priority: "normal", team: "sac" });
+    expect(categorize("perdi meu carro")).toMatchObject({ kind: "ajuda", team: "seguranca" });
+    expect(categorize("banheiro sem papel")).toMatchObject({ team: "limpeza" });
+  });
+
+  it("conclui com nota, avalia e reabre uma única vez só na mesma sessão", async () => {
+    const s = createSession("entrada-principal");
+    const c = await createTicket({ sessionId: s.id, text: "perdi um objeto" });
+    expect(() => rateTicket(c.ticketId, s.id, 5)).toThrowError(TicketError); // ainda não concluído
+    closeTicket(c.ticketId, "Marcos", { code: "resolvido", note: "Está no SAC" });
+    const pub = getPublicTicket(c.ticketId, s.id);
+    expect(pub).toMatchObject({ status: "concluido", resolutionNote: "Está no SAC", canReopen: true });
+
+    expect(() => reopenTicket(c.ticketId, "outra-sessao")).toThrowError(TicketError);
+    expect(() => rateTicket(c.ticketId, s.id, 6)).toThrowError(TicketError);
+    rateTicket(c.ticketId, s.id, 4);
+    expect(getPublicTicket(c.ticketId, s.id)?.rating).toBe(4);
+
+    reopenTicket(c.ticketId, s.id, "não achei");
+    expect(getPublicTicket(c.ticketId, s.id)).toMatchObject({ status: "novo" });
+    closeTicket(c.ticketId, "Ana", { code: "resolvido" });
+    expect(getPublicTicket(c.ticketId, s.id)?.canReopen).toBe(false);
+    expect(() => reopenTicket(c.ticketId, s.id)).toThrowError(TicketError);
+  });
+
+  it("registra eventos, escala e transfere", async () => {
+    const s = createSession("entrada-principal");
+    const c = await createTicket({ sessionId: s.id, text: "reclamação sobre a demora" });
+    addNote(c.ticketId, "Ana", "ligando para o cliente");
+    transferTicket(c.ticketId, "Ana", "manutencao");
+    escalateTicket(c.ticketId, "Ana");
+    const t = listTickets().find((x) => x.id === c.ticketId)!;
+    expect(t).toMatchObject({ kind: "reclamacao", team: "seguranca", priority: "alta" });
+    expect(t.events.map((e) => e.type)).toEqual(["criado", "nota", "transferido", "escalado"]);
+  });
+});
+
+describe("recusa pelo administrador", () => {
+  it("recusar fecha como improcedente e expõe o motivo ao visitante, com contato opcional protegido", async () => {
+    const s = createSession("entrada-principal");
+    const c = await createTicket({ sessionId: s.id, text: "quero um desconto", kind: "reclamacao", contact: "a@b.com" });
+    closeTicket(c.ticketId, "Ana", { code: "improcedente", note: "Fora do escopo" });
+    const pub = getPublicTicket(c.ticketId, s.id)!;
+    expect(pub).toMatchObject({ status: "concluido", resolutionCode: "improcedente", resolutionNote: "Fora do escopo", kind: "reclamacao" });
+    expect(JSON.stringify(pub)).not.toContain("a@b.com");
+  });
+});
+
+describe("indicadores", () => {
+  it("agrega tempos, SLA, recusas, reclamações e notas", async () => {
+    const before = getMetrics();
+    const s = createSession("frente-cea");
+    const a = await createTicket({ sessionId: s.id, text: "o atendimento foi péssimo" });
+    const b = await createTicket({ sessionId: s.id, text: "perdi meu carro" });
+    assumeTicket(a.ticketId, "Ana");
+    closeTicket(a.ticketId, "Ana", { code: "resolvido" });
+    rateTicket(a.ticketId, s.id, 5);
+    closeTicket(b.ticketId, "Ana", { code: "improcedente", note: "fora do escopo" });
+    const m = getMetrics();
+    expect(m.total).toBe(before.total + 2);
+    expect(m.complaints).toBe(before.complaints + 1);
+    expect(m.refused).toBe(before.refused + 1);
+    expect(m.ratingCount).toBe(before.ratingCount + 1);
+    expect(m.slaPct).toBeGreaterThanOrEqual(0);
+    expect(m.byPoint.find((p) => p.key === "frente-cea")?.count).toBeGreaterThanOrEqual(2);
   });
 });

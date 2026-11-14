@@ -2,15 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PanelTicket } from "@/server/tickets/service";
-import { LoginForm } from "./LoginForm";
+import { NameForm } from "./NameForm";
 import { TicketCard } from "./TicketCard";
+import { Indicators } from "./Indicators";
 
 const POLL_MS = 4000;
-type Tab = "novo" | "assumido" | "concluido";
+type Tab = "novo" | "assumido" | "concluido" | "indicadores";
 const TABS: { id: Tab; label: string }[] = [
   { id: "novo", label: "Novos" },
   { id: "assumido", label: "Em atendimento" },
   { id: "concluido", label: "Concluídos (hoje)" },
+  { id: "indicadores", label: "Indicadores" },
 ];
 
 function beep() {
@@ -40,16 +42,17 @@ export function PanelApp() {
   soundRef.current = sound;
 
   useEffect(() => {
-    try { setStaffName(localStorage.getItem("capibot_staff_name") ?? ""); } catch { /* ignora */ }
+    let n = "";
+    try { n = localStorage.getItem("capibot_staff_name") ?? ""; } catch { /* ignora */ }
+    setStaffName(n);
+    setAuthed(!!n.trim()); // "authed" = já informou o nome (não há senha)
   }, []);
 
   const load = useCallback(async () => {
     try {
       const res = await fetch("/api/panel/tickets?status=novo,assumido,concluido", { cache: "no-store" });
-      if (res.status === 401) { setAuthed(false); return false; }
       if (!res.ok) throw new Error(String(res.status));
       const data = (await res.json()) as { tickets: PanelTicket[] };
-      setAuthed(true);
       setOffline(false);
       setTickets(data.tickets);
       setNow(Date.now());
@@ -72,7 +75,7 @@ export function PanelApp() {
 
   // Polling encadeado; pausa com a aba oculta.
   useEffect(() => {
-    if (authed === false) return;
+    if (authed !== true) return;
     let timer: ReturnType<typeof setTimeout>;
     let stopped = false;
     const tick = async () => {
@@ -106,15 +109,14 @@ export function PanelApp() {
     document.title = `${newCount ? `(${newCount}) ` : ""}CapiBot — Painel`;
   }, [newCount]);
 
-  async function act(id: string, action: "assumir" | "concluir") {
+  async function act(id: string, action: string, extra: Record<string, unknown> = {}) {
     setErrors((e) => ({ ...e, [id]: "" }));
     try {
       const res = await fetch(`/api/panel/tickets/${encodeURIComponent(id)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, staffName }),
+        body: JSON.stringify({ action, staffName, ...extra }),
       });
-      if (res.status === 401) { setAuthed(false); return; }
       if (res.status === 409) {
         const b = (await res.json().catch(() => ({}))) as { assignedTo?: string };
         setErrors((e) => ({ ...e, [id]: b.assignedTo ? `Já assumido por ${b.assignedTo}.` : "Chamado já atualizado." }));
@@ -127,8 +129,7 @@ export function PanelApp() {
     await load();
   }
 
-  async function logout() {
-    await fetch("/api/panel/logout", { method: "POST" }).catch(() => {});
+  function changeName() {
     knownNew.current = null;
     setTickets([]);
     setAuthed(false);
@@ -143,7 +144,7 @@ export function PanelApp() {
 
   if (authed === null) return <main className="pn-login"><p>Carregando…</p></main>;
   if (!authed) {
-    return <LoginForm onLogged={(n) => { setStaffName(n); setAuthed(true); }} />;
+    return <NameForm initial={staffName} onDone={(n) => { setStaffName(n); setAuthed(true); }} />;
   }
 
   const shown = tickets.filter((t) => t.status === tab);
@@ -156,7 +157,7 @@ export function PanelApp() {
         <button className="btn pn-secondary" aria-pressed={sound} onClick={() => { setSound((s) => !s); beep(); }}>
           Som: {sound ? "ligado" : "desligado"}
         </button>
-        <button className="btn pn-secondary" onClick={logout}>Sair</button>
+        <button className="btn pn-secondary" onClick={changeName}>Trocar nome</button>
       </header>
       {offline && <p role="status" className="pn-offline">Sem conexão — tentando de novo</p>}
       <div role="tablist" className="pn-tabs">
@@ -168,10 +169,13 @@ export function PanelApp() {
             className="btn pn-tab"
             onClick={() => setTab(t.id)}
           >
-            {t.label} ({tickets.filter((x) => x.status === t.id).length})
+            {t.label}{t.id !== "indicadores" && ` (${tickets.filter((x) => x.status === t.id).length})`}
           </button>
         ))}
       </div>
+      {tab === "indicadores" ? (
+        <Indicators />
+      ) : (
       <section aria-live="polite" className="pn-list">
         {shown.length === 0 ? (
           <p className="pn-empty">Nenhum chamado no momento 🎉</p>
@@ -189,6 +193,7 @@ export function PanelApp() {
           ))
         )}
       </section>
+      )}
       {photo && (
         <div className="pn-lightbox" role="dialog" aria-modal="true" aria-label="Foto ampliada" onClick={() => setPhoto(null)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}

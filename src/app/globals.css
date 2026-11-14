@@ -67,3 +67,17 @@ button, input, textarea { font: inherit; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* Chamado de B.O. (IncidentPanel) e faixa fixa */
+.incident { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.75rem 1rem; border-top: 2px solid var(--border); background: var(--bubble-bot); }
+.incident select, .incident input[type="text"], .incident input:not([type]) { font: inherit; min-height: 48px; padding: 0.25rem 0.5rem; border: 2px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--fg); }
+.incident textarea { font: inherit; padding: 0.5rem; border: 2px solid var(--border); border-radius: var(--radius); background: var(--bg); color: var(--fg); }
+.incident-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.incident-photo { display: inline-flex; align-items: center; cursor: pointer; }
+.incident-lgpd { font-size: 0.8rem; margin: 0; }
+.incident .btn, .talk-bar { min-height: 48px; min-width: 48px; }
+.talk-bar { width: calc(100% - 2rem); margin: 0 1rem 0.75rem; }
+.page-head { padding: 0 1rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+.page-head h1 { margin: 0; font-size: 1.4rem; }
+.page-head p { margin: 0; }
+a.talk-bar { display: block; text-align: center; text-decoration: none; box-sizing: border-box; padding: 0.75rem; margin-top: 0; }

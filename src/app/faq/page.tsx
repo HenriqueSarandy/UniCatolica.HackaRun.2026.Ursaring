@@ -24,6 +24,17 @@ export default function FaqPage() {
       </section>
 
       <section>
+        <h2>O que fazer se…</h2>
+        {kb.orientacoes.filter((o) => o.passos.length > 0).map((o) => (
+          <details key={o.id}>
+            <summary>{o.titulo}</summary>
+            <p>{o.texto}</p>
+            <ol>{o.passos.map((p) => <li key={p}>{p}</li>)}</ol>
+          </details>
+        ))}
+      </section>
+
+      <section>
         <h2>Eventos</h2>
         {kb.eventos.map((e) => (
           <details key={e.nome}>
@@ -46,6 +57,7 @@ export default function FaqPage() {
       <footer>
         <Link className="btn" href="/">Conversar com o CapiBot</Link>
         <Link className="btn faq-alt" href="/">Falar com uma pessoa</Link>
+        <Link className="btn faq-alt" href="/atendimento">Reclamações e serviços</Link>
       </footer>
     </main>
   );

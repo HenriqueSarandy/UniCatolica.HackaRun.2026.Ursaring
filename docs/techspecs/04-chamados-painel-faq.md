@@ -1,5 +1,13 @@
 # TechSpec 04 — Chamados de B.O., Painel da Equipe e FAQ (Dev 4)
 
+> **Status (pós-implementação).** O texto abaixo é o planejamento original. O que vale hoje está na [TechSpec 05](05-ciclo-atendimento.md). Divergências principais:
+> - **O painel não tem senha.** Foram removidos login/logout, o cookie `capibot_staff`, `requireStaff` e `auth.ts`; `/api/panel/*` e `/api/uploads/*` são abertos. O painel pede só o nome de quem atende. Seções 3 (`auth.ts`), 4 (login/cookie/rate limit de login), 5 (login) e 8 (cookie, `PANEL_PASSWORD`) não se aplicam mais; protegê-lo fica a cargo da rede/proxy.
+> - A migração `003_atendimento.sql` estende `tickets` (tipo, setor, contato, resolução, reabertura, nota) e cria `ticket_events`.
+> - Ações do painel: **Aceitar** (`assumir`), **Recusar** (motivo obrigatório → `improcedente`), **Escalar**, **Concluir** (resultado + mensagem); `nota` e `transferir` só na API. Abas: Novos, Em atendimento, Concluídos (hoje) e Indicadores.
+> - `POST /api/tickets` aceita também `kind` e `contact`; `GET /api/tickets/:id` devolve resolução e `canReopen`; `POST /api/tickets/:id/feedback` confirma/reabre/avalia.
+> - `/faq` ganhou "O que fazer se…" (orientações) e link para `/atendimento`; não tem seção de avisos.
+
+
 **Objetivo:** permitir que o visitante abra um chamado (texto, transcrição de voz, foto) e que a equipe do shopping o veja, assuma e conclua em um painel web; mais uma página FAQ acessível sem conversa. Também gera o material do QR (totens) para a demo.
 
 **Contratos:** ver [README.md](README.md). Este dev **expõe** `POST /api/tickets`, `GET /api/tickets/:id`, `/api/panel/*`, `/api/uploads/:file`, as páginas `/painel` e `/faq`, e `createTicket()`. **Consome** `getPointName()` e `loadKnowledgeBase()` (Dev 3) e a tabela `sessions` / `db` (Dev 2).

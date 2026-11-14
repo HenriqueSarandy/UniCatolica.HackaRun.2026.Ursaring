@@ -12,7 +12,9 @@
     "validate:base": "tsx scripts/validate-base.ts",
     "gen:maps": "node scripts/gen-maps.mjs",
     "gen:qr": "tsx scripts/gen-qr.ts",
-    "purge:uploads": "tsx scripts/purge-uploads.ts"
+    "purge:uploads": "tsx scripts/purge-uploads.ts",
+    "seed:demo": "tsx scripts/seed-demo.ts",
+    "https:proxy": "node scripts/https-proxy.mjs"
   },
   "dependencies": {
     "@google/genai": "^3.3.0",

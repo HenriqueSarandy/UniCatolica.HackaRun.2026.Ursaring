@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { BotMessage, ChatRequest, QuickReply } from "@/types/contracts";
 import { ApiError, createSession, sendChat } from "@/lib/client/api";
+import { loadWatched, saveWatched, useTicketWatch } from "@/lib/client/useTicketWatch";
+import { handleFeedback, isFeedbackId, statusMessage } from "@/lib/client/ticketMessages";
 import A11yToolbar from "./A11yToolbar";
 import MessageList from "./MessageList";
 import Composer from "./Composer";
@@ -23,6 +25,20 @@ export default function ChatScreen({ pointId, unknownPoint }: { pointId: string;
   const lastReq = useRef<Omit<ChatRequest, "sessionId"> | null>(null);
   const started = useRef(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const [ticketId, setTicketId] = useState<string | null>(null);
+  const getSid = useCallback(() => sessionRef.current, []);
+
+  // Retoma o acompanhamento após recarregar a página.
+  useEffect(() => {
+    const w = loadWatched();
+    if (w && w.lastStatus !== "concluido") setTicketId(w.id);
+  }, []);
+
+  useTicketWatch(ticketId, getSid, (t) => {
+    const m = statusMessage(t);
+    if (m) setItems((prev) => [...prev, m]);
+    if (t.status === "concluido") setTicketId(null);
+  });
 
   const add = (...m: ChatItem[]) => setItems((prev) => [...prev, ...m]);
 
@@ -58,11 +74,14 @@ export default function ChatScreen({ pointId, unknownPoint }: { pointId: string;
         } else throw e;
       }
       add(...res.messages);
+      // Reclamação registrada pela conversa: passa a acompanhar o chamado (aceito, recusado, concluído).
+      const created = res.messages.find((m) => m.ticketId)?.ticketId;
+      if (created) { saveWatched({ id: created, lastStatus: "novo" }); setTicketId(created); }
       focusAfterReply();
     } catch {
       add({
         id: uid("err"), role: "error",
-        text: "Não consegui falar com o servidor agora. Tente de novo ou toque em Falar com uma pessoa.",
+        text: "Não consegui falar com o servidor agora. Tente de novo em instantes.",
       });
     } finally {
       setLoading(false);
@@ -82,7 +101,7 @@ export default function ChatScreen({ pointId, unknownPoint }: { pointId: string;
       } catch {
         add({
           id: uid("err"), role: "error",
-          text: "Não consegui falar com o servidor agora. Tente de novo ou toque em Falar com uma pessoa.",
+          text: "Não consegui falar com o servidor agora. Tente de novo em instantes.",
         });
         setLoading(false);
       }
@@ -92,7 +111,20 @@ export default function ChatScreen({ pointId, unknownPoint }: { pointId: string;
   const onQuickReply = (q: QuickReply) => {
     if (loading) return;
     add({ id: uid("u"), role: "user", text: q.label });
+    if (isFeedbackId(q.id)) { void onFeedback(q.id); return; }
     void run({ quickReplyId: q.id });
+  };
+
+  // Respostas do visitante à pergunta "Deu certo?" (ids `tipo:BO-XXXX`).
+  const onFeedback = async (qid: string) => {
+    if (!sessionRef.current) return;
+    try {
+      const r = await handleFeedback(qid, sessionRef.current);
+      add(r.message);
+      if (r.reopenedId) setTicketId(r.reopenedId);
+    } catch {
+      add({ id: uid("err"), role: "error", text: "Não consegui registrar sua resposta. Tente de novo." });
+    }
   };
 
   const onSend = (text: string) => {

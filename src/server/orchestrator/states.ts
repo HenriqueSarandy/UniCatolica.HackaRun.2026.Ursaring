@@ -1,7 +1,8 @@
 import type { BotMessage } from "@/types/contracts";
 import type { SessionRow } from "@/server/db/sessions";
 
-export type SessionState = "inicio" | "aguardando_loja" | "servicos" | "livre";
+// Também aceita "rec_nome|<tópico>" e "rec_texto|<tópico>|<nome>" (fluxo de reclamação).
+export type SessionState = "inicio" | "aguardando_loja" | "servicos" | "livre" | "livre_sem_resposta" | (string & {});
 
 export interface HandlerResult {
   messages: BotMessage[];
