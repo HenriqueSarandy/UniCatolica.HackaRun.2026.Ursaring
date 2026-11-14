@@ -8,9 +8,9 @@ Quatro TechSpecs para quatro devs trabalharem **em paralelo**, mais uma quinta q
 | 2 | [02-backend-orquestrador-ia.md](02-backend-orquestrador-ia.md) | `src/server/db`, `src/server/orchestrator`, `src/server/ai`, `src/app/api/session`, `src/app/api/chat` | Sessões, regras dos 4 botões, Gemini, SQLite base |
 | 3 | [03-mapas-rotas-base.md](03-mapas-rotas-base.md) | `data/`, `public/maps`, `src/server/maps`, `src/components/map`, `src/app/api/stores`, `src/app/api/route` | `base-shopping.json`, SVG, rotas douradas, MapView |
 | 4 | [04-chamados-painel-faq.md](04-chamados-painel-faq.md) | `src/server/tickets`, `src/app/api/tickets`, `src/app/api/panel`, `src/app/painel`, `src/app/faq` | Chamados de B.O., uploads, painel da equipe, FAQ |
-| 5 | [05-ciclo-atendimento.md](05-ciclo-atendimento.md) | integração (todas as pastas acima) | **Fluxo atual implementado:** tópico → localização ou reclamação, chamado com identificação, aceitar/recusar, feedback, SLA e indicadores |
+| 5 | [05-ciclo-atendimento.md](05-ciclo-atendimento.md) | integração | Ponteiro para a documentação do fluxo atual |
 
-> **Leia a 05 primeiro.** As TechSpecs 01–04 são o planejamento original e têm um quadro "Status" no topo com o que mudou. Onde divergirem, vale a 05.
+> **Fluxo atual:** [docs/atendimento/](../atendimento/README.md). As TechSpecs 01–04 são o planejamento original e têm um quadro "Status" no topo com o que mudou; onde divergirem, vale a pasta `docs/atendimento/`.
 
 ## Stack (fixa para todos)
 

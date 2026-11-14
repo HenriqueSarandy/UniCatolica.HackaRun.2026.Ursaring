@@ -1,6 +1,6 @@
 # TechSpec 04 — Chamados de B.O., Painel da Equipe e FAQ (Dev 4)
 
-> **Status (pós-implementação).** O texto abaixo é o planejamento original. O que vale hoje está na [TechSpec 05](05-ciclo-atendimento.md). Divergências principais:
+> **Status (pós-implementação).** O texto abaixo é o planejamento original. O que vale hoje está em [docs/atendimento/](../atendimento/README.md). Divergências principais:
 > - **O painel não tem senha.** Foram removidos login/logout, o cookie `capibot_staff`, `requireStaff` e `auth.ts`; `/api/panel/*` e `/api/uploads/*` são abertos. O painel pede só o nome de quem atende. Seções 3 (`auth.ts`), 4 (login/cookie/rate limit de login), 5 (login) e 8 (cookie, `PANEL_PASSWORD`) não se aplicam mais; protegê-lo fica a cargo da rede/proxy.
 > - A migração `003_atendimento.sql` estende `tickets` (tipo, setor, contato, resolução, reabertura, nota) e cria `ticket_events`.
 > - Ações do painel: **Aceitar** (`assumir`), **Recusar** (motivo obrigatório → `improcedente`), **Escalar**, **Concluir** (resultado + mensagem); `nota` e `transferir` só na API. Abas: Novos, Em atendimento, Concluídos (hoje) e Indicadores.
