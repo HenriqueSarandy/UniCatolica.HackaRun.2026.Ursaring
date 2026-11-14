@@ -1,7 +1,7 @@
 import type { BotMessage, QuickReply } from "@/types/contracts";
 import Sticker from "./Sticker";
 import QuickReplies from "./QuickReplies";
-import MapPlaceholder from "./MapPlaceholder";
+import MapView from "@/components/map/MapView";
 
 interface Props {
   message: BotMessage;
@@ -15,7 +15,7 @@ export default function BotBubble({ message, isLast, onQuickReply }: Props) {
       {message.sticker && <Sticker name={message.sticker} />}
       <div className="bubble bot">
         <p>{message.text}</p>
-        {message.map && <MapPlaceholder map={message.map} />}
+        {message.map && <MapView map={message.map} />}
         {message.quickReplies && (
           <QuickReplies items={message.quickReplies} active={isLast} onPick={onQuickReply} />
         )}

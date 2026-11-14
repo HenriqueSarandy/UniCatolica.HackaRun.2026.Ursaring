@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" font-family="system-ui, sans-serif">
+<title>Planta do piso 2 - Capim Dourado Shopping</title>
+<rect width="1200" height="800" fill="#FFF8E1"/>
+<rect x="80" y="340" width="1040" height="120" fill="#FFFFFF" opacity=".55"/>
+<rect x="570" y="40" width="60" height="720" fill="#FFFFFF" opacity=".55"/>
+<g id="loja-cinema"><title>Cinema Capim</title><rect x="80" y="90" width="120" height="250" fill="#FFFDF3" stroke="#5A3A00" stroke-width="2"/><text x="140" y="146" text-anchor="middle" font-size="16" fill="#2B1D00">Cinema</text><text x="140" y="164" text-anchor="middle" font-size="16" fill="#2B1D00">Capim</text></g>
+<g id="loja-pernambucanas"><title>Pernambucanas</title><rect x="200" y="90" width="120" height="250" fill="#FFFDF3" stroke="#5A3A00" stroke-width="2"/><text x="260" y="155" text-anchor="middle" font-size="16" fill="#2B1D00">Pernambucanas</text></g>
+<g id="loja-marisa"><title>Marisa</title><rect x="320" y="90" width="120" height="250" fill="#FFFDF3" stroke="#5A3A00" stroke-width="2"/><text x="380" y="155" text-anchor="middle" font-size="16" fill="#2B1D00">Marisa</text></g>
+<g id="loja-centauro"><title>Centauro</title><rect x="440" y="90" width="120" height="250" fill="#FFFDF3" stroke="#5A3A00" stroke-width="2"/><text x="500" y="155" text-anchor="middle" font-size="16" fill="#2B1D00">Centauro</text></g>
+<g id="loja-fastshop"><title>Fast Shop</title><rect x="640" y="90" width="120" height="250" fill="#FFFDF3" stroke="#5A3A00" stroke-width="2"/><text x="700" y="155" text-anchor="middle" font-size="16" fill="#2B1D00">Fast Shop</text></g>
+<g id="loja-cacau"><title>Cacau Show</title><rect x="760" y="90" width="120" height="250" fill="#FFFDF3" stroke="#5A3A00" stroke-width="2"/><text x="820" y="155" text-anchor="middle" font-size="16" fill="#2B1D00">Cacau Show</text></g>
+<g id="loja-rihappy"><title>Ri Happy</title><rect x="880" y="90" width="120" height="250" fill="#FFFDF3" stroke="#5A3A00" stroke-width="2"/><text x="940" y="155" text-anchor="middle" font-size="16" fill="#2B1D00">Ri Happy</text></g>
+<g id="loja-kopenhagen"><title>Kopenhagen</title><rect x="1000" y="90" width="120" height="250" fill="#FFFDF3" stroke="#5A3A00" stroke-width="2"/><text x="1060" y="155" text-anchor="middle" font-size="16" fill="#2B1D00">Kopenhagen</text></g>
+<g id="praca-oeste"><title>Praça de Alimentação (ala Oeste)</title><rect x="80" y="460" width="480" height="250" fill="#FCEFC0" stroke="#5A3A00" stroke-width="2"/><text x="320" y="646" text-anchor="middle" font-size="16" fill="#2B1D00">Praça de Alimentação</text><text x="320" y="664" text-anchor="middle" font-size="16" fill="#2B1D00">ala Oeste</text></g>
+<g id="banheiro-praca"><title>Banheiro com fraldário da Praça de Alimentação</title><rect x="640" y="460" width="120" height="250" fill="#FCEFC0" stroke="#5A3A00" stroke-width="2"/><text x="700" y="637" text-anchor="middle" font-size="16" fill="#2B1D00">Banheiro da</text><text x="700" y="655" text-anchor="middle" font-size="16" fill="#2B1D00">Praça de</text><text x="700" y="673" text-anchor="middle" font-size="16" fill="#2B1D00">Alimentação</text></g>
+<g id="praca-leste"><title>Praça de Alimentação (ala Leste)</title><rect x="760" y="460" width="360" height="250" fill="#FCEFC0" stroke="#5A3A00" stroke-width="2"/><text x="940" y="646" text-anchor="middle" font-size="16" fill="#2B1D00">Praça de Alimentação</text><text x="940" y="664" text-anchor="middle" font-size="16" fill="#2B1D00">ala Leste</text></g>
+<g id="escada-2"><title>Escada rolante</title><rect x="580" y="236" width="40" height="28" fill="#FCEFC0" stroke="#5A3A00" stroke-width="2"/><text x="600" y="286" text-anchor="middle" font-size="16" fill="#2B1D00">Escada</text><text x="600" y="304" text-anchor="middle" font-size="16" fill="#2B1D00">rolante</text></g>
+<text x="20" y="34" font-size="22" font-weight="bold" fill="#2B1D00">Piso 2</text>
+</svg>

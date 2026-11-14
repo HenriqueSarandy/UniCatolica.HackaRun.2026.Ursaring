@@ -1,4 +1,4 @@
-import { getRoute, getStoreLandmark, searchStores } from "@/server/maps/service";
+import { getRoute, getStore, getStoreLandmark, searchStores } from "@/server/maps/service";
 import { bot, R, stripEmoji, TALK_TO_PERSON } from "../replies";
 import type { Ctx, HandlerResult } from "../states";
 
@@ -10,7 +10,7 @@ export function lojasPrompt(): HandlerResult {
 }
 
 export function routeToStore(ctx: Ctx, storeId: string): HandlerResult | null {
-  const store = searchStoreById(storeId);
+  const store = getStore(storeId);
   const map = getRoute(ctx.pointId, storeId);
   if (map) {
     return {
@@ -30,12 +30,6 @@ export function routeToStore(ctx: Ctx, storeId: string): HandlerResult | null {
       bot({ text: R.lojaSemRota(store.floor, getStoreLandmark(storeId)), quickReplies: [TALK_TO_PERSON] }),
     ],
   };
-}
-
-function searchStoreById(id: string) {
-  // searchStores só busca por nome; reaproveita via nome do id (loja-xxx).
-  const guess = id.replace(/^loja-/, "").replace(/-/g, " ");
-  return searchStores(guess, 8).find((s) => s.id === id) ?? null;
 }
 
 /**

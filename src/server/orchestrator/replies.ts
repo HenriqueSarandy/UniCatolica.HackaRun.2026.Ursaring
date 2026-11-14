@@ -27,7 +27,7 @@ export const R = {
   lojaAchei: (floor: number) =>
     `Achei! Fica no piso ${floor}. Segue esse mapinha com a rota dourada aqui embaixo!`,
   lojaSemRota: (floor: number, landmark: string | null) =>
-    `Achei a loja, mas ainda não tenho o caminho desenhado. Fica no piso ${floor}${landmark ? `, perto de ${landmark}` : ""}.`,
+    `Achei a loja, mas ainda não tenho o caminho desenhado. Fica no piso ${floor}${landmark ? `, ${landmark}` : ""}.`,
   lojaQual: "Qual dessas?",
   lojaNaoAchei: "Não achei essa loja. Tenta outro nome?",
   naoSei: "Não tenho certeza. Quer falar com uma pessoa?",

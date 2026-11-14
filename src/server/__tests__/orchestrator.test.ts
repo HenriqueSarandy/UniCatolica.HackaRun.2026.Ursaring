@@ -45,10 +45,10 @@ describe("orquestrador", () => {
     expect(r.messages[0].map).toBeTruthy();
     expect(getSession(s.id)!.state).toBe("livre");
   });
-  it("loja sem rota desenhada usa landmark", async () => {
-    const r = await chat(fresh(), { storeId: "loja-livraria" });
+  it("loja sem rota (origem fora do grafo) usa a referência da loja", async () => {
+    const r = await chat(createSession("ponto-inexistente"), { storeId: "loja-livraria" });
     expect(r.messages[0].map).toBeUndefined();
-    expect(r.messages[0].text).toMatch(/perto de/);
+    expect(r.messages[0].text).toMatch(/piso 1, no lado norte/);
   });
   it("store:<id> via quick reply", async () => {
     const r = await chat(fresh(), { quickReplyId: "store:loja-cinema" });

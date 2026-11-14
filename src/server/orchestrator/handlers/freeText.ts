@@ -15,7 +15,14 @@ const KEYWORDS: [RegExp, string][] = [
 ];
 
 export function localFallback(text: string): string | null {
-  const info = (loadKnowledgeBase() as { info?: Record<string, string> }).info ?? {};
+  const { shopping: s, lojas } = loadKnowledgeBase();
+  const cinemaPiso = lojas.find((l) => l.id === "loja-cinema")?.piso;
+  const info: Record<string, string> = {
+    horario: `Lojas: ${s.horario.lojas}. Alimentação: ${s.horario.alimentacao}. Cinema: ${s.horario.cinema}.`,
+    estacionamento: s.estacionamento,
+    cinema: `O cinema fica no piso ${cinemaPiso ?? 2}. Horário: ${s.horario.cinema}.`,
+    wifi: s.wifi,
+  };
   const n = normalize(text);
   for (const [re, key] of KEYWORDS) if (re.test(n) && info[key]) return info[key];
   return null;
